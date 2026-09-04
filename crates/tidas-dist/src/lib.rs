@@ -22,10 +22,9 @@ use zip::write::SimpleFileOptions;
 
 const COPY_BUFFER_BYTES: usize = 1024 * 1024;
 const WINDOWS_TARGET: &str = "x86_64-pc-windows-msvc";
-const REQUIRED_TARGETS: [&str; 5] = [
+const REQUIRED_TARGETS: [&str; 4] = [
     "x86_64-unknown-linux-gnu",
     "aarch64-unknown-linux-gnu",
-    "x86_64-apple-darwin",
     "aarch64-apple-darwin",
     WINDOWS_TARGET,
 ];
@@ -521,9 +520,6 @@ fn homebrew_formula(
     if Hardware::CPU.arm?
       url "{mac_arm_url}"
       sha256 "{mac_arm_sha}"
-    else
-      url "{mac_x64_url}"
-      sha256 "{mac_x64_sha}"
     end
   end
 
@@ -549,8 +545,6 @@ end
 "##,
         mac_arm_url = url("aarch64-apple-darwin"),
         mac_arm_sha = sha("aarch64-apple-darwin"),
-        mac_x64_url = url("x86_64-apple-darwin"),
-        mac_x64_sha = sha("x86_64-apple-darwin"),
         linux_arm_url = url("aarch64-unknown-linux-gnu"),
         linux_arm_sha = sha("aarch64-unknown-linux-gnu"),
         linux_x64_url = url("x86_64-unknown-linux-gnu"),
@@ -697,7 +691,39 @@ mod tests {
     }
 
     #[test]
-    fn metadata_uses_the_five_exact_archive_checksums() {
+    fn supported_targets_are_exactly_the_four_approved_tuples() {
+        assert_eq!(
+            supported_targets(),
+            &[
+                "x86_64-unknown-linux-gnu",
+                "aarch64-unknown-linux-gnu",
+                "aarch64-apple-darwin",
+                "x86_64-pc-windows-msvc",
+            ]
+        );
+    }
+
+    #[test]
+    fn packaging_rejects_the_retired_macos_intel_target() {
+        let temporary = tempfile::tempdir().unwrap();
+        let binary = temporary.path().join("tidas");
+        let license = temporary.path().join("LICENSE");
+        fake_binary(&binary);
+        fs::write(&license, b"MIT\n").unwrap();
+        let result = package(&PackageRequest {
+            binary: &binary,
+            license: &license,
+            target: "x86_64-apple-darwin",
+            version: "0.1.0",
+            output_dir: temporary.path(),
+        });
+        assert!(
+            matches!(result, Err(DistError::UnsupportedTarget(target)) if target == "x86_64-apple-darwin")
+        );
+    }
+
+    #[test]
+    fn metadata_uses_the_four_exact_archive_checksums() {
         let temporary = tempfile::tempdir().unwrap();
         for (index, target) in REQUIRED_TARGETS.iter().enumerate() {
             let archive = archive_name("0.1.0", target);
@@ -718,6 +744,7 @@ mod tests {
         assert_eq!(paths.len(), 4);
         let formula = fs::read_to_string(output.join("homebrew/tidas.rb")).unwrap();
         assert!(formula.contains("aarch64-apple-darwin"));
+        assert!(!formula.contains("x86_64-apple-darwin"));
         assert!(formula.contains(&format!("{:064x}", 1)));
         let winget_version = fs::read_to_string(output.join("winget/TianGong.Tidas.yaml")).unwrap();
         assert!(
@@ -734,7 +761,8 @@ mod tests {
             winget
                 .contains("RelativeFilePath: tidas-v0.1.0-x86_64-pc-windows-msvc\\bin\\tidas.exe")
         );
-        assert!(winget.contains(&format!("{:064x}", 5)));
+        assert!(winget.contains(&format!("{:064x}", 4)));
+        assert!(!winget.contains(&format!("{:064x}", 5)));
         let winget_locale =
             fs::read_to_string(output.join("winget/TianGong.Tidas.locale.en-US.yaml")).unwrap();
         assert!(

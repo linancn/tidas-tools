@@ -39,7 +39,7 @@ enum Commands {
         #[arg(long)]
         smoke: bool,
     },
-    /// Generate Homebrew and Winget metadata from the five exact archive checksums.
+    /// Generate Homebrew and Winget metadata from the four exact archive checksums.
     Metadata {
         #[arg(long)]
         release_base_url: String,

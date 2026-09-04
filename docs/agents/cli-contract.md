@@ -27,8 +27,8 @@ checkPaths:
   - README.md
   - README_CN.md
 lastReviewedAt: 2026-09-04
-lastReviewedCommit: cf21e85224ca4d3f85f950dfb58885bf6cf9d33a
-lastReviewedNote: "Reviewed for Issue #177: the unified command, report, output-channel, and exit contracts are unchanged; only the CI qualification matrix shrinks to the four approved native targets."
+lastReviewedCommit: 7a55ec47fa440b2067f8d114b16120c8b8549488
+lastReviewedNote: "Reviewed for tidas-tools #179: patch release 0.2.1 publishes the qualified four-platform runtime after #177; external dependencies, schemas and domain behavior remain unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml

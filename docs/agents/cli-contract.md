@@ -27,7 +27,7 @@ checkPaths:
   - README.md
   - README_CN.md
 lastReviewedAt: 2026-09-04
-lastReviewedCommit: 7a55ec47fa440b2067f8d114b16120c8b8549488
+lastReviewedCommit: 8f930e0bf7c2e86741c95812aa21652d99eacc7e
 lastReviewedNote: "Reviewed for tidas-tools #179: patch release 0.2.1 publishes the qualified four-platform runtime after #177; external dependencies, schemas and domain behavior remain unchanged."
 related:
   - ../../AGENTS.md

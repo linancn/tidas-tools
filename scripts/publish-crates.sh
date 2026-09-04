@@ -71,7 +71,7 @@ sha256_file() {
 workspace_selection=(--workspace --exclude tidas-dist)
 if [[ "$mode" == "publish" ]]; then
   # The tag publish job depends on the separate package qualification job and
-  # the five-platform build matrix, so it reuses the exact archives without
+  # the four-platform build matrix, so it reuses the exact archives without
   # rebuilding native XML dependencies.
   run_cargo package \
     "${workspace_selection[@]}" \

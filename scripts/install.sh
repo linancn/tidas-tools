@@ -65,6 +65,10 @@ case "$(uname -m)" in
 esac
 
 TARGET="${ARCH}-${OS}"
+if [ "$OS" = "apple-darwin" ] && [ "$ARCH" = "x86_64" ]; then
+  echo "error: macOS Intel (x86_64) is not supported; tidas ships Apple Silicon (arm64) native archives only" >&2
+  exit 1
+fi
 ARCHIVE="tidas-v${VERSION}-${TARGET}.tar.gz"
 BASE_URL="https://github.com/${REPOSITORY}/releases/download/v${VERSION}"
 TEMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/tidas-install.XXXXXX")"

@@ -26,9 +26,9 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
   - scripts/**
-lastReviewedAt: 2026-08-20
-lastReviewedCommit: 4032198caa8654faf573c795434653113b85a331
-lastReviewedNote: "Issue #175 retains release-request validation, Docpact gates, and tag-bound five-platform publication proof for the qualified v0.2.0 version set."
+lastReviewedAt: 2026-09-04
+lastReviewedCommit: cf21e85224ca4d3f85f950dfb58885bf6cf9d33a
+lastReviewedNote: "Issue #177 retires macOS Intel: release-request validation, Docpact gates, and tag-bound four-platform publication proof remain for the qualified version set, with hermetic installer contract tests covering the retired tuple."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -56,7 +56,9 @@ scripts/publish-crates.sh check
 The asset command checks both the paired English/Chinese schema contract and
 the complete executable-asset byte lock. The pre-push hook adds strict
 Docpact. Pull requests run the product matrix on Linux x86_64/ARM64, macOS
-Intel/Apple Silicon, and Windows x86_64. Windows ARM64 is intentionally absent.
+Apple Silicon, and Windows x86_64. macOS Intel and Windows ARM64 are
+intentionally absent; the POSIX installer rejects macOS Intel before any
+download.
 
 ## Validation matrix
 
@@ -69,8 +71,8 @@ Intel/Apple Silicon, and Windows x86_64. Windows ARM64 is intentionally absent.
 | release | closure/order/round-trip golden fixtures; missing/inexact reference failure; four deterministic ZIPs; native validation; cancellation/budget; atomic directory publication | run the local 237 MiB package twice, compare all four archives, and record wall time/RSS |
 | validation/batch/references | compile every bundled schema/XSD root offline; schema and semantic fixtures including internal keyrefs; complete TIDAS projection/XSD/recovery proof; explicit schema-only diagnostic behavior; oversized rejected-instance event below the 1 MiB frame ceiling; bounded issue spool; batch preflight/drift/final-event hash; extraction schema/roles | local large-package validation twice, recording native time, projection/XSD/recovery time, peak RSS, cancellation, and spool hash |
 | assets | baseline asset check; representative `git check-attr eol`; schema-local-reference and translation-parity tests | regenerate locks only after reviewing every changed path/hash; compare fingerprints twice |
-| XML/XSD/XSLT | focused `tidas-xml` and validation tests; resolver/security tests; five-platform CI | representative production schemas/stylesheets and static-release dependency inspection |
-| native distribution | focused `tidas-dist`; package twice; archive/checksum equality; extract and run version/help/JSON/ruleset; installer syntax | five release jobs, clean-machine archive execution, runtime dependency inspection, SBOM and attestation |
+| XML/XSD/XSLT | focused `tidas-xml` and validation tests; resolver/security tests; four-platform CI | representative production schemas/stylesheets and static-release dependency inspection |
+| native distribution | focused `tidas-dist`; package twice; archive/checksum equality; extract and run version/help/JSON/ruleset; installer syntax and hermetic installer contract tests | four release jobs, clean-machine archive execution, runtime dependency inspection, SBOM and attestation |
 | crates.io | sync check; public-set qualification; verify exact version set and `tidas-dist` exclusion; script syntax | inspect each `.crate`; source install; registry absent/existing checksum simulations without a real token |
 | release request or final migration marker | shell syntax; tamper/append-only validation; actionlint; strict Docpact | simulate modification/multiple-file/target/tag/ancestry conflicts and confirm exact-tag workflow dispatch |
 | governed docs only | strict Docpact config validation and enforced lint | one focused route rendering for the changed intent |

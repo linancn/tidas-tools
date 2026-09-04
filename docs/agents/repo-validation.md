@@ -27,8 +27,8 @@ checkPaths:
   - .githooks/pre-push
   - scripts/**
 lastReviewedAt: 2026-09-04
-lastReviewedCommit: cf21e85224ca4d3f85f950dfb58885bf6cf9d33a
-lastReviewedNote: "Issue #177 retires macOS Intel: release-request validation, Docpact gates, and tag-bound four-platform publication proof remain for the qualified version set, with hermetic installer contract tests covering the retired tuple."
+lastReviewedCommit: 8f930e0bf7c2e86741c95812aa21652d99eacc7e
+lastReviewedNote: "Reviewed for tidas-tools #179: patch release 0.2.1 publishes the qualified four-platform runtime after #177; external dependencies, schemas and domain behavior remain unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml

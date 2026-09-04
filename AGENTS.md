@@ -30,8 +30,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
 lastReviewedAt: 2026-09-04
-lastReviewedCommit: cf21e85224ca4d3f85f950dfb58885bf6cf9d33a
-lastReviewedNote: "Reviewed for Issue #177: the required native matrix is Linux x86_64/ARM64, macOS Apple Silicon, and Windows x86_64; macOS Intel is retired from targets, installers, Homebrew, and CI/release proof."
+lastReviewedCommit: 8f930e0bf7c2e86741c95812aa21652d99eacc7e
+lastReviewedNote: "Reviewed for tidas-tools #179: patch release 0.2.1 publishes the qualified four-platform runtime after #177; external dependencies, schemas and domain behavior remain unchanged."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md

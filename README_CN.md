@@ -131,7 +131,7 @@ stdout 的情况下持久化报告。默认计入内存预算为 512 MiB，有�
 预构建的 GitHub 归档是面向最终用户的主要渠道；其中已包含原生 XML 依赖，运行时
 不需要 Rust 或开发工具链。
 原生 release workflow 从同一个精确的 `tidas` binary 构建并验证 Linux
-x86_64/ARM64、macOS Intel/Apple Silicon 与 Windows x86_64 制品。每个平台均
+x86_64/ARM64、macOS Apple Silicon 与 Windows x86_64 制品。每个平台均
 重复构建归档并逐字节比较，验证 SHA-256，执行打包后的 `version`、help、JSON
 `version` 与 `ruleset` 探针，并生成 SPDX SBOM 和 GitHub OIDC
 provenance/SBOM attestation。固定版本且静态链接的 libxml2/libxslt 使运行时
@@ -170,7 +170,9 @@ sh install.sh --version 0.2.0 --prefix "$HOME/.local"
 
 每个 GitHub Release 同时携带由相同归档哈希生成的 Homebrew formula 与 Winget
 manifests。创建外部 tap 或提交 Winget community 需要单独批准，且这些路径绝不
-重新构建 executable。Windows ARM64 不受支持。
+重新构建 executable。Homebrew formula 在 macOS 上选择 Apple Silicon 归档，
+POSIX 安装器会在任何下载之前拒绝 macOS Intel。macOS Intel 与 Windows ARM64
+不受支持。
 
 ## 开发
 

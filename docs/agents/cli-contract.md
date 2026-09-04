@@ -26,9 +26,9 @@ checkPaths:
   - contracts/**
   - README.md
   - README_CN.md
-lastReviewedAt: 2026-08-20
-lastReviewedCommit: 4032198caa8654faf573c795434653113b85a331
-lastReviewedNote: "Reviewed for Issue #175: the immutable v0.2.0 Release Request does not change the unified command, report, output-channel, or exit contracts."
+lastReviewedAt: 2026-09-04
+lastReviewedCommit: cf21e85224ca4d3f85f950dfb58885bf6cf9d33a
+lastReviewedNote: "Reviewed for Issue #177: the unified command, report, output-channel, and exit contracts are unchanged; only the CI qualification matrix shrinks to the four approved native targets."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -409,4 +409,4 @@ Public CLI changes must prove:
 - all affected exit classes
 - migration parity fixtures whose semantics are sourced from the frozen Python
   oracle without preserving legacy command names or flag layouts
-- Rust 1.88 fmt, clippy, tests, and the five-platform CI matrix
+- Rust 1.88 fmt, clippy, tests, and the four-platform CI matrix

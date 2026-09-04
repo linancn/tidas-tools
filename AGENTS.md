@@ -29,9 +29,9 @@ checkPaths:
   - scripts/**
   - .github/workflows/**
   - .githooks/pre-push
-lastReviewedAt: 2026-08-20
-lastReviewedCommit: 4032198caa8654faf573c795434653113b85a331
-lastReviewedNote: "Reviewed for Issue #175: the immutable v0.2.0 Release Request preserves the unified Rust product, fixed TIDAS schema boundary, bounded runtime, and merge-gated release architecture."
+lastReviewedAt: 2026-09-04
+lastReviewedCommit: cf21e85224ca4d3f85f950dfb58885bf6cf9d33a
+lastReviewedNote: "Reviewed for Issue #177: the required native matrix is Linux x86_64/ARM64, macOS Apple Silicon, and Windows x86_64; macOS Intel is retired from targets, installers, Homebrew, and CI/release proof."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md
@@ -117,8 +117,8 @@ For workspace-tracked delivery, also follow the root workspace
   validation.
 - `quick-xml` owns streaming inspection; libxml2/libxslt calls remain serialized
   behind the compatibility boundary.
-- Windows ARM64 is not a supported target. The required matrix is Linux
-  x86_64/ARM64, macOS Intel/Apple Silicon, and Windows x86_64.
+- Windows ARM64 and macOS Intel are not supported targets. The required
+  matrix is Linux x86_64/ARM64, macOS Apple Silicon, and Windows x86_64.
 - Performance and completeness tests run locally before any Worker-host proof.
   The acceptance budgets are native schema validation within 60 seconds,
   complete local package processing within 3 minutes, and peak RSS within

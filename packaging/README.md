@@ -1,7 +1,7 @@
 # Native package-manager metadata
 
 `tidas-dist metadata` generates Homebrew and Winget manifests from the
-SHA-256 sidecars of the same five archives published by the release workflow.
+SHA-256 sidecars of the same four archives published by the release workflow.
 The package-manager paths never rebuild `tidas`.
 
 For a completed `v0.1.0` artifact set:

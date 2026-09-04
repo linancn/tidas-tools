@@ -25,9 +25,9 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
   - scripts/**
-lastReviewedAt: 2026-08-20
-lastReviewedCommit: 4032198caa8654faf573c795434653113b85a331
-lastReviewedNote: "Issue #175 binds the immutable v0.2.0 Release Request to the qualified version-set merge commit without changing crate ownership or release architecture."
+lastReviewedAt: 2026-09-04
+lastReviewedCommit: cf21e85224ca4d3f85f950dfb58885bf6cf9d33a
+lastReviewedNote: "Issue #177 retires macOS Intel from the supported product matrix and release proof; crate ownership, release architecture, and downstream dispatch are unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -139,12 +139,12 @@ Generated SDK code remains downstream and never becomes source of truth here.
   inputs and reject build-machine runtime dependency leakage.
 - Network and arbitrary filesystem resolution fail closed.
 
-The supported product matrix is Linux x86_64/ARM64, macOS Intel/Apple Silicon,
-and Windows x86_64. Windows ARM64 is not supported.
+The supported product matrix is Linux x86_64/ARM64, macOS Apple Silicon,
+and Windows x86_64. macOS Intel and Windows ARM64 are not supported.
 
 ## Distribution and release
 
-Pull requests run Rust CI across the five supported targets, verify reproducible
+Pull requests run Rust CI across the four supported targets, verify reproducible
 packages, and qualify the complete crates.io set without credentials. Public
 crates share one exact version; `tidas-dist` stays internal.
 

@@ -150,7 +150,7 @@ contract is [docs/agents/cli-contract.md](docs/agents/cli-contract.md).
 Prebuilt GitHub archives are the primary end-user channel. They include the
 native XML dependencies and do not require Rust or a development toolchain.
 The native release workflow qualifies one exact `tidas` binary for Linux
-x86_64/ARM64, macOS Intel/Apple Silicon, and Windows x86_64. It builds every
+x86_64/ARM64, macOS Apple Silicon, and Windows x86_64. It builds every
 archive twice, compares the bytes, verifies SHA-256, runs packaged `version`,
 help, JSON `version`, and `ruleset` probes, generates an SPDX SBOM, and creates
 GitHub OIDC provenance/SBOM attestations. Pinned static libxml2/libxslt inputs
@@ -195,7 +195,9 @@ sh install.sh --version 0.2.0 --prefix "$HOME/.local"
 Every GitHub Release also carries generated Homebrew formula and Winget
 manifests that reference the same archive hashes. External tap creation or a
 Winget community submission is a separate publication approval; those paths
-never rebuild the executable. Windows ARM64 is not supported.
+never rebuild the executable. The Homebrew formula selects the Apple Silicon
+archive on macOS, and the POSIX installer rejects macOS Intel before any
+download. macOS Intel and Windows ARM64 are not supported.
 
 ## Development
 

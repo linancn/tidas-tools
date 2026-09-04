@@ -2,7 +2,7 @@
 //!
 //! These tests stub `uname` and `curl` on `PATH`, so platform selection is
 //! proven without network access and without a macOS Intel runner. The retired
-//! Darwin x86_64 tuple must be rejected before any download attempt.
+//! `Darwin x86_64` tuple must be rejected before any download attempt.
 
 #![cfg(unix)]
 

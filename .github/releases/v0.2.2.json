@@ -1,0 +1,5 @@
+{
+  "request_schema": "tidas.release-request.v1",
+  "version": "0.2.2",
+  "target": "17db6bd7c8a2fc0ae7dd8b68b5c35a586abe33b8"
+}

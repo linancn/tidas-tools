@@ -26,8 +26,8 @@ checkPaths:
   - .githooks/pre-push
   - scripts/**
 lastReviewedAt: 2026-09-06
-lastReviewedCommit: ff49fe337b3f8419ba643dd2a45ffc8ade0444d9
-lastReviewedNote: "Reviewed for tidas-tools #181: Windows Rust and pinned XML builds now share static CRT linkage with an explicit Cargo target. Native release inspection rejects external VC runtime/XML DLL imports before deterministic packaging and smoke. Domain behavior, assets and other supported targets remain unchanged."
+lastReviewedCommit: 45b479f1ea5785fbab05b317d4258344e2ecdf7c
+lastReviewedNote: "Reviewed for tidas-tools #183: the coherent 0.2.2 patch version carries the qualified Windows static-CRT correction from #181. External dependency versions, executable assets, schemas and domain behavior are unchanged; immutable publication and exact integration remain separately verified."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml

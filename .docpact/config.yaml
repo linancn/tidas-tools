@@ -1,8 +1,8 @@
 version: 1
 layout: repo
-# Review note, 2026-09-04: #179 requests the qualified 0.2.1 four-platform patch release; external dependencies and governance ownership remain unchanged.
-lastReviewedAt: "2026-09-04"
-lastReviewedCommit: "8f930e0bf7c2e86741c95812aa21652d99eacc7e"
+# Review note, 2026-09-06: #181 aligns Windows static CRT/XML builds and adds a native dependency gate; no ownership, schema or domain change.
+lastReviewedAt: "2026-09-06"
+lastReviewedCommit: "ff49fe337b3f8419ba643dd2a45ffc8ade0444d9"
 # Reviewed for Issue #177: macOS Intel is retired from the required native
 # matrix; Linux x86_64/ARM64, macOS Apple Silicon, and Windows x86_64 remain,
 # and ownership/routing/validation governance is otherwise unchanged.

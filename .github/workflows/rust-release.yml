@@ -83,8 +83,8 @@ jobs:
             runner: windows-2025
             family: windows
             target: x86_64-pc-windows-msvc
-            vcpkg-triplet: x64-windows-static-md
-            executable: target/release/tidas.exe
+            vcpkg-triplet: x64-windows-static
+            executable: target/x86_64-pc-windows-msvc/release/tidas.exe
 
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -135,6 +135,8 @@ jobs:
             --x-install-root="$env:RUNNER_TEMP\vcpkg\installed"
           "VCPKG_ROOT=$env:RUNNER_TEMP\vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VCPKGRS_TRIPLET=$env:TRIPLET" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "CARGO_BUILD_TARGET=x86_64-pc-windows-msvc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS=-C target-feature=+crt-static" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Build exact native binary
         shell: bash
@@ -207,6 +209,16 @@ jobs:
           EXECUTABLE: ${{ matrix.executable }}
           TARGET: ${{ matrix.target }}
         run: |
+          $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $Dumpbin = & $Vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find 'VC\Tools\MSVC\**\bin\Hostx64\x64\dumpbin.exe' | Select-Object -First 1
+          if (-not $Dumpbin) { throw "Cannot inspect Windows native runtime imports." }
+          $Imports = & $Dumpbin /DEPENDENTS /IMPORTS $env:EXECUTABLE 2>&1
+          if ($LASTEXITCODE -ne 0) { throw "Windows native import inspection failed." }
+          $Dlls = [regex]::Matches(($Imports -join "`n"), '(?im)^\s+([A-Za-z0-9_.-]+\.dll)\s*$') | ForEach-Object { $_.Groups[1].Value.ToLowerInvariant() } | Sort-Object -Unique
+          if (-not $Dlls) { throw "Windows native import inspection returned no DLLs." }
+          Write-Output "Windows native imports: $($Dlls -join ', ')"
+          $Unbundled = $Dlls | Where-Object { $_ -match '^(vcruntime|msvcp|msvcr|concrt)[0-9].*\.dll$|^(libxml2|libxslt|libexslt|libiconv.*|iconv|zlib1|lzma)\.dll$' }
+          if ($Unbundled) { throw "Windows release retains unbundled native runtime libraries: $($Unbundled -join ', ')" }
           $Version = cargo run --locked --release -p tidas-dist -- version
           cargo run --locked --release -p tidas-dist -- package `
             --binary $env:EXECUTABLE --license LICENSE --target $env:TARGET --output-dir dist/first

@@ -26,7 +26,7 @@ checkPaths:
   - .githooks/pre-push
   - scripts/**
 lastReviewedAt: 2026-09-06
-lastReviewedCommit: 45b479f1ea5785fbab05b317d4258344e2ecdf7c
+lastReviewedCommit: 17db6bd7c8a2fc0ae7dd8b68b5c35a586abe33b8
 lastReviewedNote: "Reviewed for tidas-tools #183: the coherent 0.2.2 patch version carries the qualified Windows static-CRT correction from #181. External dependency versions, executable assets, schemas and domain behavior are unchanged; immutable publication and exact integration remain separately verified."
 related:
   - ../../AGENTS.md

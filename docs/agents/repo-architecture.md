@@ -25,9 +25,9 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
   - scripts/**
-lastReviewedAt: 2026-09-04
-lastReviewedCommit: 8f930e0bf7c2e86741c95812aa21652d99eacc7e
-lastReviewedNote: "Reviewed for tidas-tools #179: patch release 0.2.1 publishes the qualified four-platform runtime after #177; external dependencies, schemas and domain behavior remain unchanged."
+lastReviewedAt: 2026-09-06
+lastReviewedCommit: ff49fe337b3f8419ba643dd2a45ffc8ade0444d9
+lastReviewedNote: "Reviewed for tidas-tools #181: Windows Rust and pinned XML builds now share static CRT linkage with an explicit Cargo target. Native release inspection rejects external VC runtime/XML DLL imports before deterministic packaging and smoke. Domain behavior, assets and other supported targets remain unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -137,6 +137,11 @@ Generated SDK code remains downstream and never becomes source of truth here.
 - Native schema/transform calls are serialized behind one process-wide lock.
 - Development builds use platform libraries; release builds use pinned static
   inputs and reject build-machine runtime dependency leakage.
+- Windows CI and release builds select the `x64-windows-static` XML triplet and
+  Rust `crt-static` together. An explicit Cargo target keeps host proc-macro
+  builds separate, and native binaries live under the target-specific output
+  directory. The release job inspects normal/delayed DLL imports and rejects
+  external VC runtime or XML DLL dependencies before packaging.
 - Network and arbitrary filesystem resolution fail closed.
 
 The supported product matrix is Linux x86_64/ARM64, macOS Apple Silicon,

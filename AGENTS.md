@@ -29,9 +29,9 @@ checkPaths:
   - scripts/**
   - .github/workflows/**
   - .githooks/pre-push
-lastReviewedAt: 2026-09-04
-lastReviewedCommit: 8f930e0bf7c2e86741c95812aa21652d99eacc7e
-lastReviewedNote: "Reviewed for tidas-tools #179: patch release 0.2.1 publishes the qualified four-platform runtime after #177; external dependencies, schemas and domain behavior remain unchanged."
+lastReviewedAt: 2026-09-06
+lastReviewedCommit: ff49fe337b3f8419ba643dd2a45ffc8ade0444d9
+lastReviewedNote: "Reviewed for tidas-tools #181: Windows Rust and pinned XML builds now share static CRT linkage with an explicit Cargo target. Native release inspection rejects external VC runtime/XML DLL imports before deterministic packaging and smoke. Domain behavior, assets and other supported targets remain unchanged."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md
@@ -119,6 +119,11 @@ For workspace-tracked delivery, also follow the root workspace
   behind the compatibility boundary.
 - Windows ARM64 and macOS Intel are not supported targets. The required
   matrix is Linux x86_64/ARM64, macOS Apple Silicon, and Windows x86_64.
+- Windows release binaries must close over the CRT as well as the XML
+  libraries. Match Rust `crt-static` with the static-CRT vcpkg triplet, use an
+  explicit Cargo target, and reject external VC runtime/XML imports before
+  packaging. A development runner's installed redistributable is not proof of
+  a self-contained release.
 - Performance and completeness tests run locally before any Worker-host proof.
   The acceptance budgets are native schema validation within 60 seconds,
   complete local package processing within 3 minutes, and peak RSS within

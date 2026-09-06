@@ -26,9 +26,9 @@ checkPaths:
   - contracts/**
   - README.md
   - README_CN.md
-lastReviewedAt: 2026-09-04
-lastReviewedCommit: 8f930e0bf7c2e86741c95812aa21652d99eacc7e
-lastReviewedNote: "Reviewed for tidas-tools #179: patch release 0.2.1 publishes the qualified four-platform runtime after #177; external dependencies, schemas and domain behavior remain unchanged."
+lastReviewedAt: 2026-09-06
+lastReviewedCommit: ff49fe337b3f8419ba643dd2a45ffc8ade0444d9
+lastReviewedNote: "Reviewed for tidas-tools #181: Windows Rust and pinned XML builds now share static CRT linkage with an explicit Cargo target. Native release inspection rejects external VC runtime/XML DLL imports before deterministic packaging and smoke. Domain behavior, assets and other supported targets remain unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml

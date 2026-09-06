@@ -26,9 +26,9 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
   - scripts/**
-lastReviewedAt: 2026-09-04
-lastReviewedCommit: 8f930e0bf7c2e86741c95812aa21652d99eacc7e
-lastReviewedNote: "Reviewed for tidas-tools #179: patch release 0.2.1 publishes the qualified four-platform runtime after #177; external dependencies, schemas and domain behavior remain unchanged."
+lastReviewedAt: 2026-09-06
+lastReviewedCommit: ff49fe337b3f8419ba643dd2a45ffc8ade0444d9
+lastReviewedNote: "Reviewed for tidas-tools #181: Windows Rust and pinned XML builds now share static CRT linkage with an explicit Cargo target. Native release inspection rejects external VC runtime/XML DLL imports before deterministic packaging and smoke. Domain behavior, assets and other supported targets remain unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -59,6 +59,16 @@ Docpact. Pull requests run the product matrix on Linux x86_64/ARM64, macOS
 Apple Silicon, and Windows x86_64. macOS Intel and Windows ARM64 are
 intentionally absent; the POSIX installer rejects macOS Intel before any
 download.
+
+Windows qualification uses `CARGO_BUILD_TARGET=x86_64-pc-windows-msvc`,
+target-specific `-C target-feature=+crt-static` and vcpkg's
+`x64-windows-static` triplet. The release job reads the built PE's dependency
+and import tables with the selected Visual Studio DUMPBIN, rejects unbundled
+VC runtime/XML DLLs, then performs repeated package/checksum verification and
+the extracted archive smoke. A smoke on a developer runner alone cannot prove
+closure: v0.2.1's `VCRUNTIME140.dll` import was masked by installed VC tools.
+The corrected artifact must remove that dependency rather than require a user
+to install a redistributable or copy a development-machine DLL.
 
 ## Validation matrix
 

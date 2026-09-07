@@ -159,7 +159,7 @@ development toolchain at runtime.
 
 The same `v<version>` release publishes the `tidas` source package and all
 reusable domain crates to crates.io before the immutable GitHub Release is
-created. Developers who already have Rust 1.88+ and the platform libxml2 /
+created. Developers who already have Rust 1.98.1+ and the platform libxml2 /
 libxslt development dependencies can install the unified executable from
 source:
 
@@ -201,7 +201,7 @@ download. macOS Intel and Windows ARM64 are not supported.
 
 ## Development
 
-Rust 1.88 or newer is required. Install the platform libxml2/libxslt development packages, then run:
+Rust 1.98.1 or newer is required. Install the platform libxml2/libxslt development packages, then run:
 
 ```bash
 scripts/audit-rust-only.sh

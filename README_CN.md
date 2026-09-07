@@ -138,7 +138,7 @@ provenance/SBOM attestation。固定版本且静态链接的 libxml2/libxslt 使
 不依赖 Homebrew、vcpkg、Java、Node.js 或开发工具链。
 
 同一个 `v<version>` release 会先把 `tidas` 源码包与全部可复用领域 crates
-发布到 crates.io，再创建不可变的 GitHub Release。已经安装 Rust 1.88+ 以及平台
+发布到 crates.io，再创建不可变的 GitHub Release。已经安装 Rust 1.98.1+ 以及平台
 libxml2/libxslt 开发依赖的开发者，也可从源码安装唯一的统一 executable：
 
 ```bash
@@ -176,7 +176,7 @@ POSIX 安装器会在任何下载之前拒绝 macOS Intel。macOS Intel 与 Wind
 
 ## 开发
 
-需要 Rust 1.88 或更新版本以及平台对应的 libxml2/libxslt 开发包。运行：
+需要 Rust 1.98.1 或更新版本以及平台对应的 libxml2/libxslt 开发包。运行：
 
 ```bash
 scripts/audit-rust-only.sh

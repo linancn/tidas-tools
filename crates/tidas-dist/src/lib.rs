@@ -4,6 +4,9 @@
 //! binary: every archive, checksum, installer manifest, and package-manager
 //! record is derived from the exact `tidas` executable supplied by the caller.
 
+pub mod notice_bundle;
+pub mod notices;
+
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
 use std::fs::{self, File};
@@ -31,6 +34,8 @@ const REQUIRED_TARGETS: [&str; 4] = [
 
 #[derive(Debug, thiserror::Error)]
 pub enum DistError {
+    #[error("native notice evidence is invalid: {0}")]
+    Notice(String),
     #[error("unsupported release target: {0}")]
     UnsupportedTarget(String),
     #[error("release input is not a regular file: {0}")]
@@ -62,13 +67,15 @@ pub enum DistError {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct DistributionManifestV1 {
+#[serde(deny_unknown_fields)]
+pub struct DistributionManifestV2 {
     pub schema_version: String,
     pub product: String,
     pub version: String,
     pub target: String,
     pub executable: String,
     pub self_contained_native_xml: bool,
+    pub third_party_notices: notice_bundle::FileDigest,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -86,6 +93,7 @@ pub struct DistributionArtifactV1 {
 pub struct PackageRequest<'a> {
     pub binary: &'a Path,
     pub license: &'a Path,
+    pub notices_dir: &'a Path,
     pub target: &'a str,
     pub version: &'a str,
     pub output_dir: &'a Path,
@@ -95,6 +103,26 @@ pub fn package(request: &PackageRequest<'_>) -> Result<DistributionArtifactV1, D
     validate_target(request.target)?;
     require_file(request.binary)?;
     require_file(request.license)?;
+    let notices = notice_bundle::verify(
+        request.notices_dir,
+        request.binary,
+        request.target,
+        request.version,
+    )?;
+    let license_digest = sha256_file(request.license)?;
+    if !notices
+        .cargo_packages
+        .iter()
+        .filter(|package| package.name == "tidas")
+        .flat_map(|package| &package.texts)
+        .any(|text| text.kind == "project-license" && text.sha256 == license_digest)
+    {
+        return Err(DistError::Notice(
+            "project license differs from the collected source license".to_owned(),
+        ));
+    }
+    let notice_manifest =
+        notice_bundle::file_digest(&request.notices_dir.join(notice_bundle::MANIFEST))?;
     fs::create_dir_all(request.output_dir)?;
 
     let root_name = archive_root(request.version, request.target);
@@ -110,14 +138,27 @@ pub fn package(request: &PackageRequest<'_>) -> Result<DistributionArtifactV1, D
     let license_dir = root.join("share").join("licenses").join("tidas");
     fs::create_dir_all(&license_dir)?;
     fs::copy(request.license, license_dir.join("LICENSE"))?;
+    let notice_dir = license_dir.join("third-party-notices");
+    for (relative, path, _) in collect_files(request.notices_dir)? {
+        let destination = notice_dir.join(relative);
+        fs::create_dir_all(destination.parent().expect("notice path has parent"))?;
+        fs::copy(path, destination)?;
+    }
+    notice_bundle::verify(&notice_dir, &staged_binary, request.target, request.version)?;
+    if notice_bundle::file_digest(&notice_dir.join(notice_bundle::MANIFEST))? != notice_manifest {
+        return Err(DistError::Notice(
+            "notice bundle changed while packaging".to_owned(),
+        ));
+    }
 
-    let manifest = DistributionManifestV1 {
-        schema_version: "tidas.distribution-manifest.v1".to_owned(),
+    let manifest = DistributionManifestV2 {
+        schema_version: "tidas.distribution-manifest.v2".to_owned(),
         product: "tidas".to_owned(),
         version: request.version.to_owned(),
         target: request.target.to_owned(),
         executable: format!("bin/{binary_name}"),
         self_contained_native_xml: true,
+        third_party_notices: notice_manifest,
     };
     let mut manifest_bytes = serde_json::to_vec_pretty(&manifest)?;
     manifest_bytes.push(b'\n');
@@ -152,7 +193,7 @@ pub fn verify(
     expected_target: &str,
     expected_version: &str,
     smoke: bool,
-) -> Result<DistributionManifestV1, DistError> {
+) -> Result<DistributionManifestV2, DistError> {
     validate_target(expected_target)?;
     require_file(archive)?;
     require_file(checksum_file)?;
@@ -164,6 +205,15 @@ pub fn verify(
     } else {
         extract_tar_gz(archive, extracted.path())?;
     }
+    let entries = fs::read_dir(extracted.path())?.collect::<Result<Vec<_>, _>>()?;
+    if entries.len() != 1
+        || entries[0].file_name()
+            != std::ffi::OsStr::new(&archive_root(expected_version, expected_target))
+    {
+        return Err(DistError::Notice(
+            "archive has an unexpected distribution root".to_owned(),
+        ));
+    }
     let root = extracted
         .path()
         .join(archive_root(expected_version, expected_target));
@@ -171,8 +221,14 @@ pub fn verify(
     if !manifest_path.is_file() {
         return Err(DistError::MissingManifest);
     }
-    let manifest: DistributionManifestV1 = serde_json::from_slice(&fs::read(&manifest_path)?)?;
-    if manifest.target != expected_target || manifest.version != expected_version {
+    let manifest: DistributionManifestV2 = serde_json::from_slice(&fs::read(&manifest_path)?)?;
+    if manifest.target != expected_target
+        || manifest.version != expected_version
+        || manifest.schema_version != "tidas.distribution-manifest.v2"
+        || manifest.product != "tidas"
+        || !manifest.self_contained_native_xml
+        || manifest.executable != format!("bin/{}", executable_name(expected_target))
+    {
         return Err(DistError::ManifestMismatch {
             expected: format!("{expected_version}/{expected_target}"),
             found: format!("{}/{}", manifest.version, manifest.target),
@@ -180,10 +236,58 @@ pub fn verify(
     }
     let executable = root.join(&manifest.executable);
     require_file(&executable)?;
+    verify_packaged_notices(&root, &manifest, &executable)?;
     if smoke {
         run_smoke(&executable)?;
     }
     Ok(manifest)
+}
+
+fn verify_packaged_notices(
+    root: &Path,
+    manifest: &DistributionManifestV2,
+    executable: &Path,
+) -> Result<(), DistError> {
+    let prefix = "share/licenses/tidas/third-party-notices";
+    let notice_dir = root.join(prefix);
+    if notice_bundle::file_digest(&notice_dir.join(notice_bundle::MANIFEST))?
+        != manifest.third_party_notices
+    {
+        return Err(DistError::Notice(
+            "packaged notice manifest digest differs".to_owned(),
+        ));
+    }
+    let notices =
+        notice_bundle::verify(&notice_dir, executable, &manifest.target, &manifest.version)?;
+    let license_digest = sha256_file(&root.join("share/licenses/tidas/LICENSE"))?;
+    if !notices
+        .cargo_packages
+        .iter()
+        .filter(|package| package.name == "tidas")
+        .flat_map(|package| &package.texts)
+        .any(|text| text.kind == "project-license" && text.sha256 == license_digest)
+    {
+        return Err(DistError::Notice(
+            "packaged project license differs from notice evidence".to_owned(),
+        ));
+    }
+    let mut expected = std::collections::BTreeSet::from([
+        manifest.executable.clone(),
+        "distribution-manifest.json".to_owned(),
+        "share/licenses/tidas/LICENSE".to_owned(),
+        format!("{prefix}/{}", notice_bundle::MANIFEST),
+    ]);
+    expected.extend(notices.files.keys().map(|path| format!("{prefix}/{path}")));
+    let actual = collect_files(root)?
+        .into_iter()
+        .map(|(path, _, _)| path)
+        .collect();
+    if expected != actual {
+        return Err(DistError::Notice(
+            "native archive contains an unexpected file inventory".to_owned(),
+        ));
+    }
+    Ok(())
 }
 
 pub fn render_package_metadata(
@@ -427,20 +531,30 @@ fn verify_checksum(archive: &Path, checksum_file: &Path) -> Result<(), DistError
 
 fn extract_zip(archive: &Path, output: &Path) -> Result<(), DistError> {
     let mut reader = zip::ZipArchive::new(File::open(archive)?)?;
+    if reader.len() > 16384 {
+        return Err(DistError::Notice(
+            "archive member bound exceeded".to_owned(),
+        ));
+    }
+    let mut paths = std::collections::BTreeSet::new();
+    let mut total = 0_u64;
     for index in 0..reader.len() {
         let mut member = reader.by_index(index)?;
         let relative = member
             .enclosed_name()
-            .ok_or_else(|| DistError::UnsafePath(PathBuf::from(member.name())))?
-            .clone();
-        let destination = output.join(relative);
+            .ok_or_else(|| DistError::UnsafePath(PathBuf::from(member.name())))?;
+        validate_relative(&relative)?;
+        let mode = member.unix_mode().unwrap_or(0) & 0o170_000;
+        if !paths.insert(portable(&relative)?) || ![0, 0o100_000, 0o040_000].contains(&mode) {
+            return Err(DistError::UnsafePath(relative));
+        }
+        let destination = output.join(&relative);
         if member.is_dir() {
-            fs::create_dir_all(&destination)?;
+            fs::create_dir_all(destination)?;
             continue;
         }
-        fs::create_dir_all(destination.parent().expect("archive file has parent"))?;
-        let mut file = File::create(destination)?;
-        std::io::copy(&mut member, &mut file)?;
+        let size = member.size();
+        extract_regular(&mut member, &destination, size, &mut total)?;
     }
     Ok(())
 }
@@ -448,7 +562,63 @@ fn extract_zip(archive: &Path, output: &Path) -> Result<(), DistError> {
 fn extract_tar_gz(archive: &Path, output: &Path) -> Result<(), DistError> {
     let reader = flate2::read::GzDecoder::new(File::open(archive)?);
     let mut archive = tar::Archive::new(reader);
-    archive.unpack(output)?;
+    let mut paths = std::collections::BTreeSet::new();
+    let mut total = 0_u64;
+    for entry in archive.entries()? {
+        let mut entry = entry?;
+        let relative = entry.path()?.into_owned();
+        validate_relative(&relative)?;
+        if !paths.insert(portable(&relative)?) || paths.len() > 16384 {
+            return Err(DistError::UnsafePath(relative));
+        }
+        let destination = output.join(&relative);
+        if entry.header().entry_type().is_dir() {
+            fs::create_dir_all(destination)?;
+            continue;
+        }
+        if !entry.header().entry_type().is_file() {
+            return Err(DistError::UnsafePath(relative));
+        }
+        let size = entry.size();
+        extract_regular(&mut entry, &destination, size, &mut total)?;
+    }
+    Ok(())
+}
+
+fn extract_regular(
+    reader: &mut impl Read,
+    destination: &Path,
+    size: u64,
+    total: &mut u64,
+) -> Result<(), DistError> {
+    *total = total.checked_add(size).ok_or(DistError::SizeOverflow)?;
+    if *total > 512 * 1024 * 1024 {
+        return Err(DistError::Notice(
+            "native archive size bound exceeded".to_owned(),
+        ));
+    }
+    fs::create_dir_all(
+        destination
+            .parent()
+            .ok_or_else(|| DistError::UnsafePath(destination.to_path_buf()))?,
+    )?;
+    let mut file = File::options()
+        .write(true)
+        .create_new(true)
+        .open(destination)?;
+    let copied = std::io::copy(&mut reader.take(size + 1), &mut file)?;
+    if copied != size {
+        return Err(DistError::Notice(
+            "archive member length differs".to_owned(),
+        ));
+    }
+    #[cfg(unix)]
+    if destination
+        .file_name()
+        .is_some_and(|name| name == "tidas" || name == "tidas.exe")
+    {
+        set_executable(destination)?;
+    }
     Ok(())
 }
 
@@ -617,6 +787,10 @@ fn hex(digest: impl AsRef<[u8]>) -> String {
 }
 
 #[cfg(test)]
+#[path = "../tests/support/notice_fixture.rs"]
+mod notice_fixture;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -633,9 +807,18 @@ mod tests {
         fs::write(&license, b"MIT\n").unwrap();
         let first_dir = temporary.path().join("first");
         let second_dir = temporary.path().join("second");
+        let notices_dir = temporary.path().join("notices");
+        notice_fixture::create(
+            &notices_dir,
+            &binary,
+            &license,
+            "x86_64-unknown-linux-gnu",
+            "0.1.0",
+        );
         let first = package(&PackageRequest {
             binary: &binary,
             license: &license,
+            notices_dir: &notices_dir,
             target: "x86_64-unknown-linux-gnu",
             version: "0.1.0",
             output_dir: &first_dir,
@@ -644,6 +827,7 @@ mod tests {
         let second = package(&PackageRequest {
             binary: &binary,
             license: &license,
+            notices_dir: &notices_dir,
             target: "x86_64-unknown-linux-gnu",
             version: "0.1.0",
             output_dir: &second_dir,
@@ -667,9 +851,12 @@ mod tests {
         let license = temporary.path().join("LICENSE");
         fake_binary(&binary);
         fs::write(&license, b"MIT\n").unwrap();
+        let notices_dir = temporary.path().join("notices");
+        notice_fixture::create(&notices_dir, &binary, &license, WINDOWS_TARGET, "0.1.0");
         let artifact = package(&PackageRequest {
             binary: &binary,
             license: &license,
+            notices_dir: &notices_dir,
             target: WINDOWS_TARGET,
             version: "0.1.0",
             output_dir: temporary.path(),
@@ -713,6 +900,7 @@ mod tests {
         let result = package(&PackageRequest {
             binary: &binary,
             license: &license,
+            notices_dir: temporary.path(),
             target: "x86_64-apple-darwin",
             version: "0.1.0",
             output_dir: temporary.path(),

@@ -29,9 +29,9 @@ checkPaths:
   - scripts/**
   - .github/workflows/**
   - .githooks/pre-push
-lastReviewedAt: 2026-09-06
-lastReviewedCommit: 17db6bd7c8a2fc0ae7dd8b68b5c35a586abe33b8
-lastReviewedNote: "Reviewed for tidas-tools #183: the coherent 0.2.2 patch version carries the qualified Windows static-CRT correction from #181. External dependency versions, executable assets, schemas and domain behavior are unchanged; immutable publication and exact integration remain separately verified."
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: f83b37876fd61fbb375318cce6380ab4d72174be
+lastReviewedNote: "Reviewed for tidas-tools #185 and the explicit compiler-baseline decision: all active CI/release jobs and source requirements use Rust 1.98.1 without a Rust 1.88 compatibility matrix. Exact original compiler-project terms supplement rustup component layouts using immutable source/archive evidence. Runtime behavior, four supported platforms and immutable release authorization remain unchanged."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md
@@ -130,6 +130,8 @@ For workspace-tracked delivery, also follow the root workspace
   512 MiB.
 
 ## Canonical local validation
+
+Rust 1.98.1 is the required source-build and CI/release toolchain.
 
 ```bash
 scripts/audit-rust-only.sh

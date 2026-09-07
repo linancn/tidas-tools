@@ -25,9 +25,9 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
   - scripts/**
-lastReviewedAt: 2026-09-06
-lastReviewedCommit: 17db6bd7c8a2fc0ae7dd8b68b5c35a586abe33b8
-lastReviewedNote: "Reviewed for tidas-tools #183: the coherent 0.2.2 patch version carries the qualified Windows static-CRT correction from #181. External dependency versions, executable assets, schemas and domain behavior are unchanged; immutable publication and exact integration remain separately verified."
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: f83b37876fd61fbb375318cce6380ab4d72174be
+lastReviewedNote: "Reviewed for tidas-tools #185 and the explicit compiler-baseline decision: all active CI/release jobs and source requirements use Rust 1.98.1 without a Rust 1.88 compatibility matrix. Exact original compiler-project terms supplement rustup component layouts using immutable source/archive evidence. Runtime behavior, four supported platforms and immutable release authorization remain unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -152,6 +152,17 @@ and Windows x86_64. macOS Intel and Windows ARM64 are not supported.
 Pull requests run Rust CI across the four supported targets, verify reproducible
 packages, and qualify the complete crates.io set without credentials. Public
 crates share one exact version; `tidas-dist` stays internal.
+
+The internal `tidas-dist` notice collectors retain checksum-verified Cargo
+normal/build source inputs, installed vcpkg target-port notices and original
+Rust library notice material. The complete producer binds those inputs and
+referenced terms to the actual executable, source commit, lock and toolchain.
+Distribution-manifest v2 includes the digest and length of the complete native
+notice manifest; package/verify require matching original material and the exact
+archive inventory. Dependency edge scopes, target kinds and Rust source
+supersets remain distinct from actual linkage. Original licensing explanations
+and canonical reference terms retain separate attribution roles. See
+`packaging/README.md` and `packaging/third-party-notices/README.md`.
 
 A reviewed append-only `.github/releases/v<version>.json` binds a native
 release to a full source commit. Its merge job creates/verifies the exact tag

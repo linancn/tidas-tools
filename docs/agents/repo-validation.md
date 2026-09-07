@@ -26,9 +26,9 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
   - scripts/**
-lastReviewedAt: 2026-09-06
-lastReviewedCommit: 17db6bd7c8a2fc0ae7dd8b68b5c35a586abe33b8
-lastReviewedNote: "Reviewed for tidas-tools #183: the coherent 0.2.2 patch version carries the qualified Windows static-CRT correction from #181. External dependency versions, executable assets, schemas and domain behavior are unchanged; immutable publication and exact integration remain separately verified."
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: f83b37876fd61fbb375318cce6380ab4d72174be
+lastReviewedNote: "Reviewed for tidas-tools #185 and the explicit compiler-baseline decision: all active CI/release jobs and source requirements use Rust 1.98.1 without a Rust 1.88 compatibility matrix. Exact original compiler-project terms supplement rustup component layouts using immutable source/archive evidence. Runtime behavior, four supported platforms and immutable release authorization remain unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -52,6 +52,9 @@ cargo test --locked --workspace --all-targets
 scripts/sync-rust-package-assets.sh check
 scripts/publish-crates.sh check
 ```
+
+Rust 1.98.1 is the required compiler for local, CI and release validation;
+there is no separate Rust 1.88 compatibility matrix.
 
 The asset command checks both the paired English/Chinese schema contract and
 the complete executable-asset byte lock. The pre-push hook adds strict
@@ -114,6 +117,21 @@ Record:
 
 Do not claim a deferred cross-platform job or external connector test as a
 local pass.
+
+For notice input collection, run `cargo test --locked -p tidas-dist` and the
+internal exporters against the actual locked Cargo registry archives, native
+installation and Rust sysroot. Regressions must cover tampered crate and
+supplement bytes, missing native/toolchain material, symlink traversal,
+repeatable output and preservation of an existing output on failure. Record
+the selected target and package counts as source-input evidence. Then generate
+the executable-bound bundle from a clean committed source tree with the actual
+static-build environment and Rust source/documentation components. Package
+twice and run archive verification and smoke. Tests must reject a foreign
+binary, omitted dependency records, altered canonical terms even with updated
+local hashes, and deleted archive notices even with an updated outer checksum.
+Distribution-manifest v2 and the complete notice tree must qualify on all four
+native jobs before a versioned release. Source-only exports do not prove that
+native packaging or publication has completed.
 
 ## Local Docpact push gate
 

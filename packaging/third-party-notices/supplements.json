@@ -1,0 +1,206 @@
+{
+  "schema_version": "tidas.license-supplement-sources.v1",
+  "scope": "retained upstream evidence for locked crates whose archives omit standalone license files",
+  "packages": [
+    {
+      "name": "block2",
+      "version": "0.6.2",
+      "registry_checksum": "cdeb9d870516001442e364c5220d3574d2da8dc765554b4a617230d33fa58ef5",
+      "declared_license": "MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "source_commit": "b4167b582b2f75f9a1be75495c41b765344fd03c",
+      "path_in_vcs": "crates/block2",
+      "kind": "upstream-licensing-notice",
+      "evidence": [
+        {
+          "path": "texts/7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54.txt",
+          "bytes": 1339,
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "source_path": "LICENSE.md",
+          "git_blob_sha1": "540ae4c81adb5f64a9f61e222b688880da24300e",
+          "source_url": "https://raw.githubusercontent.com/madsmtm/objc2/b4167b582b2f75f9a1be75495c41b765344fd03c/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "name": "dispatch2",
+      "version": "0.3.1",
+      "registry_checksum": "1e0e367e4e7da84520dedcac1901e4da967309406d1e51017ae1abfb97adbd38",
+      "declared_license": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "source_commit": "8852b424193ca41602281b3d7540d7c8ed51e49a",
+      "path_in_vcs": "crates/dispatch2",
+      "kind": "upstream-licensing-notice",
+      "evidence": [
+        {
+          "path": "texts/7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54.txt",
+          "bytes": 1339,
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "source_path": "LICENSE.md",
+          "git_blob_sha1": "540ae4c81adb5f64a9f61e222b688880da24300e",
+          "source_url": "https://raw.githubusercontent.com/madsmtm/objc2/8852b424193ca41602281b3d7540d7c8ed51e49a/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "name": "include_dir",
+      "version": "0.7.4",
+      "registry_checksum": "923d117408f1e49d914f1a379a309cffe4f18c05cf4e3d12e613a15fc81bd0dd",
+      "declared_license": "MIT",
+      "repository": "https://github.com/Michael-F-Bryan/include_dir",
+      "source_commit": "d742c6fffce99ee89da91b934e7ce6fb2a82680c",
+      "path_in_vcs": "include_dir",
+      "kind": "upstream-license-text",
+      "evidence": [
+        {
+          "path": "texts/9369f62987b3a116111f2edfdc4cc72633e44ddc94d5d0c68659cf537b76a31f.txt",
+          "bytes": 1070,
+          "sha256": "9369f62987b3a116111f2edfdc4cc72633e44ddc94d5d0c68659cf537b76a31f",
+          "source_path": "LICENSE",
+          "git_blob_sha1": "be6d221e1d05e22a3daf07e3d073f4d55c88e7af",
+          "source_url": "https://raw.githubusercontent.com/Michael-F-Bryan/include_dir/d742c6fffce99ee89da91b934e7ce6fb2a82680c/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "include_dir_macros",
+      "version": "0.7.4",
+      "registry_checksum": "7cab85a7ed0bd5f0e76d93846e0147172bed2e2d3f859bcc33a8d9699cad1a75",
+      "declared_license": "MIT",
+      "repository": "https://github.com/Michael-F-Bryan/include_dir",
+      "source_commit": "d742c6fffce99ee89da91b934e7ce6fb2a82680c",
+      "path_in_vcs": "macros",
+      "kind": "upstream-license-text",
+      "evidence": [
+        {
+          "path": "texts/9369f62987b3a116111f2edfdc4cc72633e44ddc94d5d0c68659cf537b76a31f.txt",
+          "bytes": 1070,
+          "sha256": "9369f62987b3a116111f2edfdc4cc72633e44ddc94d5d0c68659cf537b76a31f",
+          "source_path": "LICENSE",
+          "git_blob_sha1": "be6d221e1d05e22a3daf07e3d073f4d55c88e7af",
+          "source_url": "https://raw.githubusercontent.com/Michael-F-Bryan/include_dir/d742c6fffce99ee89da91b934e7ce6fb2a82680c/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "objc2",
+      "version": "0.6.4",
+      "registry_checksum": "3a12a8ed07aefc768292f076dc3ac8c48f3781c8f2d5851dd3d98950e8c5a89f",
+      "declared_license": "MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "source_commit": "8852b424193ca41602281b3d7540d7c8ed51e49a",
+      "path_in_vcs": "crates/objc2",
+      "kind": "upstream-licensing-notice",
+      "evidence": [
+        {
+          "path": "texts/7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54.txt",
+          "bytes": 1339,
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "source_path": "LICENSE.md",
+          "git_blob_sha1": "540ae4c81adb5f64a9f61e222b688880da24300e",
+          "source_url": "https://raw.githubusercontent.com/madsmtm/objc2/8852b424193ca41602281b3d7540d7c8ed51e49a/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "name": "objc2-core-foundation",
+      "version": "0.3.2",
+      "registry_checksum": "2a180dd8642fa45cdb7dd721cd4c11b1cadd4929ce112ebd8b9f5803cc79d536",
+      "declared_license": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "source_commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+      "path_in_vcs": "framework-crates/objc2-core-foundation",
+      "kind": "upstream-licensing-notice",
+      "evidence": [
+        {
+          "path": "texts/7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54.txt",
+          "bytes": 1339,
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "source_path": "LICENSE.md",
+          "git_blob_sha1": "540ae4c81adb5f64a9f61e222b688880da24300e",
+          "source_url": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "name": "objc2-encode",
+      "version": "4.1.0",
+      "registry_checksum": "ef25abbcd74fb2609453eb695bd2f860d389e457f67dc17cafc8b8cbc89d0c33",
+      "declared_license": "MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "source_commit": "8d214f5477365ffcbcbb7de058c86ed9a518efb7",
+      "path_in_vcs": "crates/objc2-encode",
+      "kind": "upstream-licensing-notice",
+      "evidence": [
+        {
+          "path": "texts/7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54.txt",
+          "bytes": 1339,
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "source_path": "LICENSE.md",
+          "git_blob_sha1": "540ae4c81adb5f64a9f61e222b688880da24300e",
+          "source_url": "https://raw.githubusercontent.com/madsmtm/objc2/8d214f5477365ffcbcbb7de058c86ed9a518efb7/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "name": "objc2-system-configuration",
+      "version": "0.3.2",
+      "registry_checksum": "7216bd11cbda54ccabcab84d523dc93b858ec75ecfb3a7d89513fa22464da396",
+      "declared_license": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "source_commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+      "path_in_vcs": "framework-crates/objc2-system-configuration",
+      "kind": "upstream-licensing-notice",
+      "evidence": [
+        {
+          "path": "texts/7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54.txt",
+          "bytes": 1339,
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "source_path": "LICENSE.md",
+          "git_blob_sha1": "540ae4c81adb5f64a9f61e222b688880da24300e",
+          "source_url": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "name": "uuid-simd",
+      "version": "0.8.0",
+      "registry_checksum": "23b082222b4f6619906941c17eb2297fff4c2fb96cb60164170522942a200bd8",
+      "declared_license": "MIT",
+      "repository": "https://github.com/Nugine/simd",
+      "source_commit": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+      "path_in_vcs": "crates/uuid-simd",
+      "kind": "upstream-license-text",
+      "evidence": [
+        {
+          "path": "texts/71674605ec4c087fe9eb534e3e4f9e26eb2e4aabcd76a29fd156c6a844d44b3d.txt",
+          "bytes": 1062,
+          "sha256": "71674605ec4c087fe9eb534e3e4f9e26eb2e4aabcd76a29fd156c6a844d44b3d",
+          "source_path": "LICENSE",
+          "git_blob_sha1": "2c7eabb59093ea117d73b20effdd0414f87b2af2",
+          "source_url": "https://raw.githubusercontent.com/Nugine/simd/d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "vsimd",
+      "version": "0.8.0",
+      "registry_checksum": "5c3082ca00d5a5ef149bb8b555a72ae84c9c59f7250f013ac822ac2e49b19c64",
+      "declared_license": "MIT",
+      "repository": "https://github.com/Nugine/simd",
+      "source_commit": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+      "path_in_vcs": "crates/vsimd",
+      "kind": "upstream-license-text",
+      "evidence": [
+        {
+          "path": "texts/71674605ec4c087fe9eb534e3e4f9e26eb2e4aabcd76a29fd156c6a844d44b3d.txt",
+          "bytes": 1062,
+          "sha256": "71674605ec4c087fe9eb534e3e4f9e26eb2e4aabcd76a29fd156c6a844d44b3d",
+          "source_path": "LICENSE",
+          "git_blob_sha1": "2c7eabb59093ea117d73b20effdd0414f87b2af2",
+          "source_url": "https://raw.githubusercontent.com/Nugine/simd/d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE"
+        }
+      ]
+    }
+  ]
+}

@@ -26,8 +26,8 @@ checkPaths:
   - .githooks/pre-push
   - scripts/**
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: a083d11a37a3b327b140b26a2fcfb9dcb59dd858
-lastReviewedNote: "Reviewed for tidas-tools #187: coherent 0.3.0 workspace/public crate and path-dependency versions prepare the already-qualified native notice bundle and Rust1.98.1 baseline for immutable publication. The distribution manifest uses v2; external dependency resolution, domain behavior and executable asset bytes are unchanged. Publication and exact integration remain separately qualified."
+lastReviewedCommit: bbccee6a7e3c10ce1184e06fd7b621862ad6ce07
+lastReviewedNote: "Reviewed for tidas-tools #187: the append-only v0.3.0 release request targets exact qualified version commit bbccee6a7e3c10ce1184e06fd7b621862ad6ce07. Source versions, original notices, Rust1.98.1 and native runtime invariants are retained; tag publication and exact integration require their own completed evidence."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml

@@ -24,9 +24,9 @@ checkPaths:
   - scripts/validate-release-request.sh
   - scripts/sync-rust-package-assets.sh
   - .github/workflows/**
-lastReviewedAt: 2026-07-27
-lastReviewedCommit: f7a56243cfc6d38114dac396893889e748c68c88
-lastReviewedNote: "Issue #126 completes the Rust-only cutover and removes the legacy implementation, packaging, and invocation surface."
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: a083d11a37a3b327b140b26a2fcfb9dcb59dd858
+lastReviewedNote: "Reviewed for tidas-tools #187: coherent 0.3.0 workspace/public crate and path-dependency versions prepare the already-qualified native notice bundle and Rust1.98.1 baseline for immutable publication. The distribution manifest uses v2; external dependency resolution, domain behavior and executable asset bytes are unchanged. Publication and exact integration remain separately qualified."
 related:
   - AGENTS.md
   - .docpact/config.yaml
@@ -164,7 +164,7 @@ libxslt development dependencies can install the unified executable from
 source:
 
 ```bash
-cargo install tidas --version 0.2.0 --locked
+cargo install tidas --version 0.3.0 --locked
 ```
 
 All public workspace crates use the exact same version so Cargo cannot combine

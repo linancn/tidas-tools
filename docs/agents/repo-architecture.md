@@ -26,8 +26,8 @@ checkPaths:
   - .githooks/pre-push
   - scripts/**
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: f83b37876fd61fbb375318cce6380ab4d72174be
-lastReviewedNote: "Reviewed for tidas-tools #185 and the explicit compiler-baseline decision: all active CI/release jobs and source requirements use Rust 1.98.1 without a Rust 1.88 compatibility matrix. Exact original compiler-project terms supplement rustup component layouts using immutable source/archive evidence. Runtime behavior, four supported platforms and immutable release authorization remain unchanged."
+lastReviewedCommit: a083d11a37a3b327b140b26a2fcfb9dcb59dd858
+lastReviewedNote: "Reviewed for tidas-tools #187: coherent 0.3.0 workspace/public crate and path-dependency versions prepare the already-qualified native notice bundle and Rust1.98.1 baseline for immutable publication. The distribution manifest uses v2; external dependency resolution, domain behavior and executable asset bytes are unchanged. Publication and exact integration remain separately qualified."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml

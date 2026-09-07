@@ -27,9 +27,9 @@ checkPaths:
   - scripts/test-release-request.sh
   - scripts/validate-release-request.sh
   - scripts/sync-rust-package-assets.sh
-lastReviewedAt: 2026-07-27
-lastReviewedCommit: f7a56243cfc6d38114dac396893889e748c68c88
-lastReviewedNote: "Issue #126 完成 Rust-only cutover，并移除旧实现、打包与调用入口。"
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: a083d11a37a3b327b140b26a2fcfb9dcb59dd858
+lastReviewedNote: "Reviewed for tidas-tools #187: coherent 0.3.0 workspace/public crate and path-dependency versions prepare the already-qualified native notice bundle and Rust1.98.1 baseline for immutable publication. The distribution manifest uses v2; external dependency resolution, domain behavior and executable asset bytes are unchanged. Publication and exact integration remain separately qualified."
 related:
   - AGENTS.md
   - .docpact/config.yaml
@@ -142,7 +142,7 @@ provenance/SBOM attestation。固定版本且静态链接的 libxml2/libxslt 使
 libxml2/libxslt 开发依赖的开发者，也可从源码安装唯一的统一 executable：
 
 ```bash
-cargo install tidas --version 0.2.0 --locked
+cargo install tidas --version 0.3.0 --locked
 ```
 
 全部公开 workspace crates 使用完全相同的精确版本，避免 Cargo 混用不兼容的领域

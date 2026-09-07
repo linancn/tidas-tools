@@ -52,7 +52,8 @@ See [the retained source evidence](third-party-notices/README.md).
 
 ## Executable-bound native notices
 
-The release job installs `rust-src` and `rust-docs`, builds the exact native
+All CI and release jobs use Rust 1.98.1, which is also the declared source
+build minimum. The release job installs `rust-src` and `rust-docs`, builds the exact native
 executable with pinned static XML inputs, then runs the internal `notices`
 command in the same build environment:
 
@@ -68,6 +69,10 @@ cargo run --locked --release -p tidas-dist -- package \
 `notices` requires clean committed source and vcpkg checkouts, the source-pinned
 vcpkg baseline, the static XML build environment (including Windows static CRT),
 the actual Rust sysroot and the selected target's compiled library inventory.
+Rustup does not copy the compiler archive's root LICENSE-MIT/LICENSE-APACHE
+files into its installed sysroot. For that layout, the producer requires
+original project terms retained for the exact observed compiler release and
+commit; unknown compiler identities and partial installed terms fail.
 The `tidas.native-notice-bundle.v1` manifest binds the executable digest and
 length, source commit, Cargo.lock, installed native package/feature set and
 Rust compiler identity. Original text files and source evidence are retained

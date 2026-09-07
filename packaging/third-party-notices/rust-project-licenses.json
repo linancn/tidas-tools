@@ -1,0 +1,28 @@
+{
+  "schema_version": "tidas.rust-project-license-sources.v1",
+  "toolchains": [
+    {
+      "release": "1.98.1",
+      "rustc_commit": "48a229ceaefd4985c50990b14116b6d856af0985",
+      "repository": "https://github.com/rust-lang/rust",
+      "evidence": [
+        {
+          "path": "rust-toolchain-texts/b71bd43a069ca0641a9ecfe585ca7b3c53b5cc1608f8b68321168698e28b5ea1.txt",
+          "sha256": "b71bd43a069ca0641a9ecfe585ca7b3c53b5cc1608f8b68321168698e28b5ea1",
+          "bytes": 1068,
+          "source_path": "LICENSE-MIT",
+          "source_url": "https://raw.githubusercontent.com/rust-lang/rust/48a229ceaefd4985c50990b14116b6d856af0985/LICENSE-MIT",
+          "git_blob_sha1": "a2070c4be7acd5316f8d0357ca3c12419a2f3c62"
+        },
+        {
+          "path": "rust-toolchain-texts/62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "bytes": 9723,
+          "source_path": "LICENSE-APACHE",
+          "source_url": "https://raw.githubusercontent.com/rust-lang/rust/48a229ceaefd4985c50990b14116b6d856af0985/LICENSE-APACHE",
+          "git_blob_sha1": "1b5ec8b78e237b5c3b3d812a7c0a6589d0f7161d"
+        }
+      ]
+    }
+  ]
+}

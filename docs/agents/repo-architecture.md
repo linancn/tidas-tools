@@ -26,8 +26,8 @@ checkPaths:
   - .githooks/pre-push
   - scripts/**
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: d89c14c5bde28729f80ed1a6d960878ed66217cb
-lastReviewedNote: "Reviewed for tidas-tools #185: executable-bound native notice bundles retain locked Cargo/native/Rust source evidence, original notices and source-pinned reference terms. Distribution-manifest v2 and package/verify enforce the complete inventory and byte bindings; release jobs collect notices in the native build environment. Source scopes remain distinct from linkage, and public runtime, supported platforms and release authorization are unchanged."
+lastReviewedCommit: f83b37876fd61fbb375318cce6380ab4d72174be
+lastReviewedNote: "Reviewed for tidas-tools #185 and the explicit compiler-baseline decision: all active CI/release jobs and source requirements use Rust 1.98.1 without a Rust 1.88 compatibility matrix. Exact original compiler-project terms supplement rustup component layouts using immutable source/archive evidence. Runtime behavior, four supported platforms and immutable release authorization remain unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml

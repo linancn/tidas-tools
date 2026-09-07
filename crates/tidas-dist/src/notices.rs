@@ -78,60 +78,134 @@ pub struct RustLibraryNoticeInputs {
 pub fn collect_rust_library_notice_inputs(
     sysroot: &Path,
 ) -> Result<RustLibraryNoticeInputs, DistError> {
+    collect_rust_library_material(sysroot, None)
+}
+
+fn collect_rust_library_material(
+    sysroot: &Path,
+    profile: Option<(&Path, &str, &str)>,
+) -> Result<RustLibraryNoticeInputs, DistError> {
     let sysroot = sysroot.canonicalize()?;
-    let choose = |paths: &[&str]| -> Result<String, DistError> {
+    let choose = |paths: &[&str]| {
         paths
             .iter()
             .find(|path| sysroot.join(path).is_file())
             .map(|path| (*path).to_owned())
-            .ok_or_else(|| invalid("actual Rust toolchain library notice material is missing"))
     };
-    let files = [
-        (
-            choose(&[
-                "LICENSE-MIT",
-                "share/doc/rust/LICENSE-MIT",
-                "share/doc/rustc/LICENSE-MIT",
-            ])?,
-            "rust-project-license",
-        ),
-        (
-            choose(&[
-                "LICENSE-APACHE",
-                "share/doc/rust/LICENSE-APACHE",
-                "share/doc/rustc/LICENSE-APACHE",
-            ])?,
-            "rust-project-license",
-        ),
-        (
-            choose(&[
-                "share/doc/rustc/COPYRIGHT-library.html",
-                "share/doc/rust/COPYRIGHT-library.html",
-                "share/doc/rust/html/COPYRIGHT-library.html",
-                "COPYRIGHT-library.html",
-            ])?,
-            "rust-library-notice-report",
-        ),
-    ];
-    let mut collected = CargoNoticeInputs {
+    let mit = choose(&[
+        "LICENSE-MIT",
+        "share/doc/rust/LICENSE-MIT",
+        "share/doc/rustc/LICENSE-MIT",
+    ]);
+    let apache = choose(&[
+        "LICENSE-APACHE",
+        "share/doc/rust/LICENSE-APACHE",
+        "share/doc/rustc/LICENSE-APACHE",
+    ]);
+    let report = choose(&[
+        "share/doc/rustc/COPYRIGHT-library.html",
+        "share/doc/rust/COPYRIGHT-library.html",
+        "share/doc/rust/html/COPYRIGHT-library.html",
+        "COPYRIGHT-library.html",
+    ])
+    .ok_or_else(|| invalid("actual Rust library notice report is missing"))?;
+    let mut material = CargoNoticeInputs {
         packages: Vec::new(),
         texts: BTreeMap::new(),
         retained_bytes: 0,
     };
-    let mut texts = Vec::new();
-    for (file, kind) in files {
-        texts.push(retain(
-            &mut collected,
-            read_contained_file(&sysroot, &file, MAX_TEXT)?,
-            kind,
-            file,
-            None,
-        )?);
-    }
+    let mut texts = match (mit, apache) {
+        (Some(mit), Some(apache)) => {
+            let mut texts = Vec::new();
+            for file in [mit, apache] {
+                texts.push(retain(
+                    &mut material,
+                    read_contained_file(&sysroot, &file, MAX_TEXT)?,
+                    "rust-project-license",
+                    file,
+                    None,
+                )?);
+            }
+            texts
+        }
+        (None, None) => {
+            let (references, release, commit) = profile
+                .ok_or_else(|| invalid("Rust project terms are not installed in this sysroot"))?;
+            retained_rust_project_terms(&mut material, references, release, commit)?
+        }
+        _ => {
+            return Err(invalid(
+                "Rust sysroot contains only part of its project terms",
+            ));
+        }
+    };
+    texts.push(retain(
+        &mut material,
+        read_contained_file(&sysroot, &report, MAX_TEXT)?,
+        "rust-library-notice-report",
+        report,
+        None,
+    )?);
     Ok(RustLibraryNoticeInputs {
         texts,
-        contents: collected.texts,
+        contents: material.texts,
     })
+}
+
+fn retained_rust_project_terms(
+    material: &mut CargoNoticeInputs,
+    references: &Path,
+    release: &str,
+    commit: &str,
+) -> Result<Vec<NoticeText>, DistError> {
+    let catalog: Value = serde_json::from_slice(&read_file(
+        &references.join("rust-project-licenses.json"),
+        MAX_TEXT,
+    )?)?;
+    if catalog["schema_version"] != "tidas.rust-project-license-sources.v1" {
+        return Err(invalid("unsupported retained Rust project terms"));
+    }
+    let matches: Vec<_> = values(&catalog, "toolchains")?
+        .iter()
+        .filter(|item| item["release"] == release && item["rustc_commit"] == commit)
+        .collect();
+    if matches.len() != 1 || matches[0]["repository"] != "https://github.com/rust-lang/rust" {
+        return Err(invalid(
+            "no original Rust project terms are pinned for this exact compiler",
+        ));
+    }
+    let mut names = BTreeSet::new();
+    let mut texts = Vec::new();
+    for item in values(matches[0], "evidence")? {
+        let name = text(item, "source_path")?;
+        if !["LICENSE-MIT", "LICENSE-APACHE"].contains(&name) || !names.insert(name) {
+            return Err(invalid("unexpected or duplicate Rust project terms"));
+        }
+        let digest = text(item, "sha256")?;
+        if digest.len() != 64 || !digest.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+            return Err(invalid("invalid Rust project term digest"));
+        }
+        let path = format!("rust-toolchain-texts/{digest}.txt");
+        let url = format!("https://raw.githubusercontent.com/rust-lang/rust/{commit}/{name}");
+        if item["path"] != path || item["source_url"] != url {
+            return Err(invalid("Rust project term source binding differs"));
+        }
+        let bytes = read_contained_file(references, &path, MAX_TEXT)?;
+        if hash(&bytes) != digest || Some(bytes.len() as u64) != item["bytes"].as_u64() {
+            return Err(invalid("original Rust project terms changed"));
+        }
+        texts.push(retain(
+            material,
+            bytes,
+            "rust-project-license",
+            name.to_owned(),
+            Some(url),
+        )?);
+    }
+    if names.len() != 2 {
+        return Err(invalid("retained Rust project terms are incomplete"));
+    }
+    Ok(texts)
 }
 
 type NativeInstalledPackages = BTreeMap<String, (String, BTreeSet<String>)>;
@@ -142,9 +216,11 @@ type NativeInstalledPackages = BTreeMap<String, (String, BTreeSet<String>)>;
 pub fn collect_rust_distribution_notice_inputs(
     sysroot: &Path,
     references: &Path,
+    release: &str,
+    commit: &str,
 ) -> Result<RustLibraryNoticeInputs, DistError> {
     let sysroot = sysroot.canonicalize()?;
-    let mut result = collect_rust_library_notice_inputs(&sysroot)?;
+    let mut result = collect_rust_library_material(&sysroot, Some((references, release, commit)))?;
     let library = sysroot.join("lib/rustlib/src/rust/library");
     for required in [
         "compiler-builtins/LICENSE.txt",
@@ -487,9 +563,7 @@ pub(crate) fn collect_current_cargo_notice_inputs(
     target: &str,
 ) -> Result<(CargoNoticeInputs, Vec<u8>), DistError> {
     crate::validate_target(target)?;
-    let workspace = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../..")
-        .canonicalize()?;
+    let workspace = source_workspace()?;
     let lock_bytes = read_file(&workspace.join("Cargo.lock"), 16 * 1024 * 1024)?;
     let lock = std::str::from_utf8(&lock_bytes).map_err(|_| invalid("Cargo lock is not UTF-8"))?;
     lock_checksums(lock)?;
@@ -1190,4 +1264,10 @@ pub fn collect_cargo_notice_inputs(
         .packages
         .sort_by(|left, right| (&left.name, &left.version).cmp(&(&right.name, &right.version)));
     Ok(result)
+}
+
+pub(crate) fn source_workspace() -> Result<std::path::PathBuf, DistError> {
+    Ok(Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../..")
+        .canonicalize()?)
 }

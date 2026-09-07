@@ -48,3 +48,12 @@ The executable-bound bundle includes the locked Cargo inputs, original native
 notices, source/toolchain evidence and the complete retained text inventory.
 It is carried by distribution-manifest v2 and checked before archive smoke.
 See [the packaging contract](../README.md) for scope, provenance and commands.
+
+`rust-project-licenses.json` supplies original Rust project terms for the exact
+Rust 1.98.1 compiler commit. Their bytes were checked both against the immutable
+Rust source Git blobs and the compiler archive authenticated by Rust's official
+release manifest. These are the original compiler-project files omitted from
+rustup's installed component tree, not generic replacement license templates.
+The complete producer selects them only when both project terms are absent
+from the sysroot and the observed compiler identity matches exactly. It still
+requires the installed library report and original rust-src material.

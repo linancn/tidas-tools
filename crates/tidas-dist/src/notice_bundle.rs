@@ -63,9 +63,7 @@ pub struct CollectRequest<'a> {
 pub fn collect(request: &CollectRequest<'_>) -> Result<NoticeBundleManifestV1, DistError> {
     crate::validate_target(request.target)?;
     require_new_output(request.output_dir)?;
-    let workspace = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../..")
-        .canonicalize()?;
+    let workspace = notices::source_workspace()?;
     clean_source(&workspace)?;
     let commit = git_head(&workspace)?;
     let executable = file_digest(request.binary)?;
@@ -90,6 +88,8 @@ pub fn collect(request: &CollectRequest<'_>) -> Result<NoticeBundleManifestV1, D
     let rust = notices::collect_rust_distribution_notice_inputs(
         &sysroot,
         &workspace.join("packaging/third-party-notices"),
+        rustc_field(&version_output, "release")?,
+        rustc_field(&version_output, "commit-hash")?,
     )?;
     let status = read_bounded(&installed.join("vcpkg/status"), MAX_FILE)?;
     if digest(&status).sha256 != native.installed_status_sha256 {

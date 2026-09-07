@@ -1,7 +1,50 @@
 use std::fs;
 use tidas_dist::notices::{
-    collect_rust_library_notice_inputs, collect_vcpkg_notice_inputs, write_native_notice_inputs,
+    collect_rust_distribution_notice_inputs, collect_rust_library_notice_inputs,
+    collect_vcpkg_notice_inputs, write_native_notice_inputs,
 };
+
+#[test]
+fn rustup_layout_requires_original_project_terms_for_the_exact_compiler() {
+    let temporary = tempfile::tempdir().unwrap();
+    let root = temporary.path();
+    fs::create_dir_all(root.join("share/doc/rust")).unwrap();
+    fs::write(
+        root.join("share/doc/rust/COPYRIGHT-library.html"),
+        "Original Rust library report fixture\n",
+    )
+    .unwrap();
+    let library = root.join("lib/rustlib/src/rust/library/compiler-builtins");
+    fs::create_dir_all(library.join("libm")).unwrap();
+    fs::write(
+        library.join("LICENSE.txt"),
+        "Compiler builtins source fixture\n",
+    )
+    .unwrap();
+    fs::write(library.join("libm/LICENSE.txt"), "Libm source fixture\n").unwrap();
+    let references = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../packaging/third-party-notices");
+    let commit = "48a229ceaefd4985c50990b14116b6d856af0985";
+    assert!(collect_rust_library_notice_inputs(root).is_err());
+    let collected =
+        collect_rust_distribution_notice_inputs(root, &references, "1.98.1", commit).unwrap();
+    let project: Vec<_> = collected
+        .texts
+        .iter()
+        .filter(|text| text.kind == "rust-project-license")
+        .collect();
+    assert_eq!(project.len(), 2);
+    assert!(
+        project
+            .iter()
+            .all(|text| text.source_url.as_ref().unwrap().contains(commit))
+    );
+    assert!(collect_rust_distribution_notice_inputs(root, &references, "1.98.0", commit).is_err());
+    assert!(
+        collect_rust_distribution_notice_inputs(root, &references, "1.98.1", &"0".repeat(40))
+            .is_err()
+    );
+}
 
 fn native_fixture(root: &std::path::Path) {
     fs::create_dir_all(root.join("vcpkg")).unwrap();

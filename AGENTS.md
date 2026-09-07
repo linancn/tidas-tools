@@ -30,8 +30,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 8c4a3e5fd0ebcef81ba6eabcf3a638a31a4f486c
-lastReviewedNote: "Reviewed for tidas-tools #185: internal locked Cargo and installed native/Rust notice collectors preserve source identities and original material with bounded deterministic exports. These are source inputs; executable-bound complete notice packaging remains pending. Public commands, runtime behavior, release authorization and supported platforms are unchanged."
+lastReviewedCommit: d89c14c5bde28729f80ed1a6d960878ed66217cb
+lastReviewedNote: "Reviewed for tidas-tools #185: executable-bound native notice bundles retain locked Cargo/native/Rust source evidence, original notices and source-pinned reference terms. Distribution-manifest v2 and package/verify enforce the complete inventory and byte bindings; release jobs collect notices in the native build environment. Source scopes remain distinct from linkage, and public runtime, supported platforms and release authorization are unchanged."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md

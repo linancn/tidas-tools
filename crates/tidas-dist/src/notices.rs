@@ -25,6 +25,8 @@ pub struct NoticeText {
     pub kind: String,
     pub source_path: String,
     pub source_url: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub license_id: Option<String>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -134,7 +136,76 @@ pub fn collect_rust_library_notice_inputs(
 
 type NativeInstalledPackages = BTreeMap<String, (String, BTreeSet<String>)>;
 
-fn vcpkg_status_packages(
+/// Retains the installed rust-src library's original license material as a
+/// source superset. The upstream report remains the attribution source;
+/// canonical reference terms do not invent copyright holders.
+pub fn collect_rust_distribution_notice_inputs(
+    sysroot: &Path,
+    references: &Path,
+) -> Result<RustLibraryNoticeInputs, DistError> {
+    let sysroot = sysroot.canonicalize()?;
+    let mut result = collect_rust_library_notice_inputs(&sysroot)?;
+    let library = sysroot.join("lib/rustlib/src/rust/library");
+    for required in [
+        "compiler-builtins/LICENSE.txt",
+        "compiler-builtins/libm/LICENSE.txt",
+    ] {
+        read_contained_file(&library, required, MAX_TEXT)?;
+    }
+    let mut material = CargoNoticeInputs {
+        packages: Vec::new(),
+        texts: result.contents,
+        retained_bytes: 0,
+    };
+    material.retained_bytes = material.texts.values().map(Vec::len).sum();
+    for (index, entry) in walkdir::WalkDir::new(&library)
+        .sort_by_file_name()
+        .into_iter()
+        .enumerate()
+    {
+        let entry = entry?;
+        if index >= 50_000 || entry.file_type().is_symlink() {
+            return Err(invalid(
+                "Rust library source tree is oversized or contains a symlink",
+            ));
+        }
+        if entry.file_type().is_file() && license_name(&entry.file_name().to_string_lossy()) {
+            let path = relative(
+                entry
+                    .path()
+                    .strip_prefix(&sysroot)
+                    .map_err(|_| invalid("Rust source escaped sysroot"))?,
+            )?;
+            result.texts.push(retain(
+                &mut material,
+                read_contained_file(&sysroot, &path, MAX_TEXT)?,
+                "rust-library-source-license-or-notice",
+                path,
+                None,
+            )?);
+        }
+    }
+    for identifier in [
+        "Apache-2.0",
+        "BSD-2-Clause",
+        "LLVM-exception",
+        "MIT",
+        "NCSA",
+        "Unicode-3.0",
+        "Zlib",
+    ] {
+        result
+            .texts
+            .push(reference_term(&mut material, references, identifier)?);
+    }
+    result
+        .texts
+        .sort_by(|left, right| left.source_path.cmp(&right.source_path));
+    result.contents = material.texts;
+    Ok(result)
+}
+
+pub(crate) fn vcpkg_status_packages(
     status: &str,
     triplet: &str,
 ) -> Result<NativeInstalledPackages, DistError> {
@@ -397,6 +468,25 @@ pub fn write_current_cargo_notice_inputs(target: &str, output: &Path) -> Result<
     if output.exists() {
         return Err(invalid("notice input output already exists"));
     }
+    let (collected, lock_bytes) = collect_current_cargo_notice_inputs(target)?;
+    let record = serde_json::json!({
+        "schema_version":"tidas.cargo-notice-inputs.v1",
+        "scope":"resolved normal/build source inputs; not a binary SBOM or complete native notice bundle",
+        "target":target,"cargo_lock_sha256":hash(&lock_bytes),"packages":collected.packages,
+    });
+    write_notice_inputs(
+        output,
+        "cargo-notice-inputs.json",
+        &record,
+        &collected.texts,
+    )?;
+    Ok(collected.packages.len())
+}
+
+pub(crate) fn collect_current_cargo_notice_inputs(
+    target: &str,
+) -> Result<(CargoNoticeInputs, Vec<u8>), DistError> {
+    crate::validate_target(target)?;
     let workspace = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../..")
         .canonicalize()?;
@@ -450,18 +540,7 @@ pub fn write_current_cargo_notice_inputs(target: &str, output: &Path) -> Result<
     if read_file(&workspace.join("Cargo.lock"), 16 * 1024 * 1024)? != lock_bytes {
         return Err(invalid("Cargo lock changed during notice collection"));
     }
-    let record = serde_json::json!({
-        "schema_version":"tidas.cargo-notice-inputs.v1",
-        "scope":"resolved normal/build source inputs; not a binary SBOM or complete native notice bundle",
-        "target":target,"cargo_lock_sha256":hash(&lock_bytes),"packages":collected.packages,
-    });
-    write_notice_inputs(
-        output,
-        "cargo-notice-inputs.json",
-        &record,
-        &collected.texts,
-    )?;
-    Ok(collected.packages.len())
+    Ok((collected, lock_bytes))
 }
 
 fn write_notice_inputs(
@@ -607,6 +686,7 @@ fn retain(
         kind: kind.to_owned(),
         source_path: path,
         source_url: url,
+        license_id: None,
     };
     match result.texts.entry(digest) {
         std::collections::btree_map::Entry::Vacant(entry) => {
@@ -631,7 +711,9 @@ fn retain(
 
 // Cargo generates this lock layout. Unsupported non-registry sources are rejected,
 // not resolved by this reader; Cargo owns dependency resolution.
-fn lock_checksums(lock: &str) -> Result<BTreeMap<(String, String, String), String>, DistError> {
+pub(crate) fn lock_checksums(
+    lock: &str,
+) -> Result<BTreeMap<(String, String, String), String>, DistError> {
     if !lock.lines().any(|line| line.trim() == "version = 4") {
         return Err(invalid("unsupported Cargo lock format"));
     }
@@ -735,7 +817,60 @@ fn supplement(
     if facts.is_empty() {
         return Err(invalid("license supplement has no material"));
     }
+    if kind == "licensing-notice" {
+        let identifiers: &[&str] = match text(package, "license")? {
+            "MIT" => &["MIT"],
+            "Zlib OR Apache-2.0 OR MIT" => &["Zlib", "Apache-2.0", "MIT"],
+            _ => return Err(invalid("licensing notice has unreviewed referenced terms")),
+        };
+        for identifier in identifiers {
+            facts.push(reference_term(result, directory, identifier)?);
+        }
+    }
     Ok(facts)
+}
+
+fn reference_term(
+    result: &mut CargoNoticeInputs,
+    directory: &Path,
+    identifier: &str,
+) -> Result<NoticeText, DistError> {
+    let reference: Value = serde_json::from_slice(&read_file(
+        &directory.join("referenced-terms.json"),
+        MAX_TEXT,
+    )?)?;
+    if reference["schema_version"] != "tidas.referenced-license-terms.v1" {
+        return Err(invalid("unsupported referenced license terms"));
+    }
+    let records: Vec<_> = values(&reference, "terms")?
+        .iter()
+        .filter(|item| item["license_id"] == identifier)
+        .collect();
+    if records.len() != 1 {
+        return Err(invalid("missing or duplicate referenced license terms"));
+    }
+    let item = records[0];
+    let digest = text(item, "sha256")?;
+    if digest.len() != 64 || !digest.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        return Err(invalid("invalid reference term digest"));
+    }
+    let path = format!("reference-texts/{digest}.txt");
+    if text(item, "path")? != path {
+        return Err(invalid("invalid reference term path"));
+    }
+    let bytes = read_contained_file(directory, &path, MAX_TEXT)?;
+    if hash(&bytes) != digest || Some(bytes.len() as u64) != item["bytes"].as_u64() {
+        return Err(invalid("referenced license terms changed"));
+    }
+    let mut retained = retain(
+        result,
+        bytes,
+        "referenced-license-terms",
+        text(item, "source_path")?.to_owned(),
+        Some(text(item, "source_url")?.to_owned()),
+    )?;
+    retained.license_id = Some(identifier.to_owned());
+    Ok(retained)
 }
 
 type CargoValues<'a> = BTreeMap<&'a str, &'a Value>;

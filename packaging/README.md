@@ -46,8 +46,56 @@ uses locked Cargo archive checksums and retained upstream supplements, installed
 native copyright material, and original Rust library notices. Each JSON export
 identifies its scope and text hashes; host paths are not emitted.
 
-These commands collect source inputs. They do not establish which code is
-linked into an executable, resolve every notice's referenced terms, or qualify
-a native archive for redistribution. Archive integration and executable-bound
-verification remain work under #185. See
-[the retained source evidence](third-party-notices/README.md).
+These commands collect source inputs. The complete packaging path below binds
+those inputs to an executable and retains the additional referenced terms.
+See [the retained source evidence](third-party-notices/README.md).
+
+## Executable-bound native notices
+
+The release job installs `rust-src` and `rust-docs`, builds the exact native
+executable with pinned static XML inputs, then runs the internal `notices`
+command in the same build environment:
+
+```bash
+cargo run --locked --release -p tidas-dist -- notices \
+  --binary "$EXECUTABLE" --target "$TARGET" \
+  --vcpkg-root "$RUNNER_TEMP/vcpkg" --output-dir dist/notices
+cargo run --locked --release -p tidas-dist -- package \
+  --binary "$EXECUTABLE" --license LICENSE --notices-dir dist/notices \
+  --target "$TARGET" --output-dir dist/first
+```
+
+`notices` requires clean committed source and vcpkg checkouts, the source-pinned
+vcpkg baseline, the static XML build environment (including Windows static CRT),
+the actual Rust sysroot and the selected target's compiled library inventory.
+The `tidas.native-notice-bundle.v1` manifest binds the executable digest and
+length, source commit, Cargo.lock, installed native package/feature set and
+Rust compiler identity. Original text files and source evidence are retained
+with exact byte lengths and SHA-256 digests. Publication stages in a sibling
+directory and preserves existing outputs on failure.
+
+Cargo normal/build edges and declared target kinds describe resolved source
+inputs; normal proc-macro dependencies and vcpkg helpers remain build inputs.
+Rust library notices retain a conservative source superset, including original
+compiler-builtins/libm material. The target library inventory identifies the
+installed compilation inputs; it does not claim every installed library was
+linked. This distinction avoids treating development or host tools as shipped
+runtime components. Official release build provenance establishes the
+source-to-binary relationship.
+
+`package` requires a verified notice bundle matching its exact executable,
+target, version and project license. The resulting
+`tidas.distribution-manifest.v2` adds `third_party_notices` with the byte length
+and SHA-256 of
+`share/licenses/tidas/third-party-notices/notice-manifest.json`. The same
+directory contains all listed source evidence and `texts/<sha256>.txt` files.
+The public product remains the single `bin/tidas` (or `bin/tidas.exe`).
+
+`verify` checks the complete archive inventory, the nested manifest, all text
+hashes, retained Cargo/native package sets, toolchain evidence and canonical
+reference-term digests before optional smoke execution. Missing, changed,
+foreign or unlisted material fails verification, including after a caller
+recomputes the outer archive checksum. Archive extraction rejects links,
+duplicate/unsafe paths, unexpected roots and oversized inventories. Legacy v1
+archives do not satisfy the new notice requirement; existing immutable releases
+are not rewritten.

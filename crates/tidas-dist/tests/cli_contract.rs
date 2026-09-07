@@ -3,6 +3,9 @@ use std::process::Command;
 
 use serde_json::Value;
 
+#[path = "support/notice_fixture.rs"]
+mod notice_fixture;
+
 fn command() -> Command {
     Command::new(env!("CARGO_BIN_EXE_tidas-dist"))
 }
@@ -37,6 +40,14 @@ fn cli_success_malformed_input_determinism_and_exit_codes_are_stable() {
     fs::write(&license, b"MIT\n").unwrap();
     let first = temporary.path().join("first");
     let second = temporary.path().join("second");
+    let notices = temporary.path().join("notices");
+    notice_fixture::create(
+        &notices,
+        &binary,
+        &license,
+        "x86_64-unknown-linux-gnu",
+        env!("CARGO_PKG_VERSION"),
+    );
 
     for output_dir in [&first, &second] {
         let output = command()
@@ -46,6 +57,8 @@ fn cli_success_malformed_input_determinism_and_exit_codes_are_stable() {
                 binary.to_str().unwrap(),
                 "--license",
                 license.to_str().unwrap(),
+                "--notices-dir",
+                notices.to_str().unwrap(),
                 "--target",
                 "x86_64-unknown-linux-gnu",
                 "--output-dir",
@@ -88,6 +101,8 @@ fn cli_success_malformed_input_determinism_and_exit_codes_are_stable() {
             binary.to_str().unwrap(),
             "--license",
             license.to_str().unwrap(),
+            "--notices-dir",
+            notices.to_str().unwrap(),
             "--target",
             "windows-arm64-unsupported",
             "--output-dir",

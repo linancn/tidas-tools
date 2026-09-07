@@ -18,3 +18,7 @@ assets/eilcd/schemas/ILCD_LifeCycleModelDataSet.xsd -text
 *.md text eol=lf
 *.sh text eol=lf
 Cargo.lock text eol=lf
+
+# License evidence is retained as exact upstream bytes, including on Windows.
+LICENSE -text
+packaging/third-party-notices/**/*.txt -text

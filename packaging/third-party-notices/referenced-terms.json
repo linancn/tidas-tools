@@ -1,0 +1,72 @@
+{
+  "schema_version": "tidas.referenced-license-terms.v1",
+  "repository": "https://github.com/spdx/license-list-data",
+  "source_commit": "c4a7237ec8f4654e867546f9f409749300f1bf4c",
+  "source_release": "v3.28.0",
+  "scope": "Canonical reference terms; original template notation is preserved. Copyright attribution remains in the separately retained upstream notices and is not filled in or inferred from these reference copies.",
+  "terms": [
+    {
+      "license_id": "Apache-2.0",
+      "path": "reference-texts/074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff.txt",
+      "bytes": 10280,
+      "sha256": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+      "source_path": "text/Apache-2.0.txt",
+      "git_blob_sha1": "137069b823873b8bcf42979bcf8e9371052d26a2",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/c4a7237ec8f4654e867546f9f409749300f1bf4c/text/Apache-2.0.txt"
+    },
+    {
+      "license_id": "BSD-2-Clause",
+      "path": "reference-texts/f32fb3b417a194167cfad068223fc975ba96c5960513a10f66a3c28720aec1df.txt",
+      "bytes": 1267,
+      "sha256": "f32fb3b417a194167cfad068223fc975ba96c5960513a10f66a3c28720aec1df",
+      "source_path": "text/BSD-2-Clause.txt",
+      "git_blob_sha1": "5f662b354cd40cd5339d5aa05d74b15405138230",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/c4a7237ec8f4654e867546f9f409749300f1bf4c/text/BSD-2-Clause.txt"
+    },
+    {
+      "license_id": "LLVM-exception",
+      "path": "reference-texts/e34c58338bd89d43e709e226610d8f32b3e3c47f4ad9a99a8dc1d4ac7842488e.txt",
+      "bytes": 919,
+      "sha256": "e34c58338bd89d43e709e226610d8f32b3e3c47f4ad9a99a8dc1d4ac7842488e",
+      "source_path": "text/LLVM-exception.txt",
+      "git_blob_sha1": "fa4b725a0ee50ef723ce5292865e54de7b0bfca4",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/c4a7237ec8f4654e867546f9f409749300f1bf4c/text/LLVM-exception.txt"
+    },
+    {
+      "license_id": "MIT",
+      "path": "reference-texts/b05785f9f18e6716bab63424b11454513b9943a222595b70411009202fc592b5.txt",
+      "bytes": 1078,
+      "sha256": "b05785f9f18e6716bab63424b11454513b9943a222595b70411009202fc592b5",
+      "source_path": "text/MIT.txt",
+      "git_blob_sha1": "d817195dad53ec992418c28ffca5fbd1cd86502a",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/c4a7237ec8f4654e867546f9f409749300f1bf4c/text/MIT.txt"
+    },
+    {
+      "license_id": "NCSA",
+      "path": "reference-texts/b31bbfd06e221b39e1a877fb3f91b32fe9e88c87c1b46d11cd2bd5c822ec71e3.txt",
+      "bytes": 1700,
+      "sha256": "b31bbfd06e221b39e1a877fb3f91b32fe9e88c87c1b46d11cd2bd5c822ec71e3",
+      "source_path": "text/NCSA.txt",
+      "git_blob_sha1": "cf5413effa25a89cae2ef0de21ade82e3672cb3b",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/c4a7237ec8f4654e867546f9f409749300f1bf4c/text/NCSA.txt"
+    },
+    {
+      "license_id": "Unicode-3.0",
+      "path": "reference-texts/f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1.txt",
+      "bytes": 1995,
+      "sha256": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1",
+      "source_path": "text/Unicode-3.0.txt",
+      "git_blob_sha1": "11f2842a303a7935740f7a1d09139b0b9c28c3b6",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/c4a7237ec8f4654e867546f9f409749300f1bf4c/text/Unicode-3.0.txt"
+    },
+    {
+      "license_id": "Zlib",
+      "path": "reference-texts/bfb1112d49db5b1daecdfef24bd7e2f3ea0bafb33aa67aa0ab51e2bf8407c03d.txt",
+      "bytes": 838,
+      "sha256": "bfb1112d49db5b1daecdfef24bd7e2f3ea0bafb33aa67aa0ab51e2bf8407c03d",
+      "source_path": "text/Zlib.txt",
+      "git_blob_sha1": "e0e3605ba4269a62d38ef0a510d5e96c0ae009cc",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/c4a7237ec8f4654e867546f9f409749300f1bf4c/text/Zlib.txt"
+    }
+  ]
+}

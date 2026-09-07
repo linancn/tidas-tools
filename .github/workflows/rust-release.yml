@@ -90,6 +90,8 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - uses: dtolnay/rust-toolchain@39b0b3842c7e8bbf6904c0bfc3d9006fdd4dc4e0
+        with:
+          components: rust-src,rust-docs
 
       - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
         with:
@@ -185,10 +187,13 @@ jobs:
           TARGET: ${{ matrix.target }}
         run: |
           version="$(cargo run --locked --release -p tidas-dist -- version)"
+          cargo run --locked --release -p tidas-dist -- notices \
+            --binary "$EXECUTABLE" --target "$TARGET" \
+            --vcpkg-root "$RUNNER_TEMP/vcpkg" --output-dir dist/notices
           cargo run --locked --release -p tidas-dist -- package \
-            --binary "$EXECUTABLE" --license LICENSE --target "$TARGET" --output-dir dist/first
+            --binary "$EXECUTABLE" --license LICENSE --notices-dir dist/notices --target "$TARGET" --output-dir dist/first
           cargo run --locked --release -p tidas-dist -- package \
-            --binary "$EXECUTABLE" --license LICENSE --target "$TARGET" --output-dir dist/second
+            --binary "$EXECUTABLE" --license LICENSE --notices-dir dist/notices --target "$TARGET" --output-dir dist/second
           archive="tidas-v${version}-${TARGET}.tar.gz"
           cmp "dist/first/$archive" "dist/second/$archive"
           cmp "dist/first/$archive.sha256" "dist/second/$archive.sha256"
@@ -220,10 +225,14 @@ jobs:
           $Unbundled = $Dlls | Where-Object { $_ -match '^(vcruntime|msvcp|msvcr|concrt)[0-9].*\.dll$|^(libxml2|libxslt|libexslt|libiconv.*|iconv|zlib1|lzma)\.dll$' }
           if ($Unbundled) { throw "Windows release retains unbundled native runtime libraries: $($Unbundled -join ', ')" }
           $Version = cargo run --locked --release -p tidas-dist -- version
+          cargo run --locked --release -p tidas-dist -- notices `
+            --binary $env:EXECUTABLE --target $env:TARGET `
+            --vcpkg-root "$env:RUNNER_TEMP\vcpkg" --output-dir dist/notices
+          if ($LASTEXITCODE -ne 0) { throw "Native notice collection failed." }
           cargo run --locked --release -p tidas-dist -- package `
-            --binary $env:EXECUTABLE --license LICENSE --target $env:TARGET --output-dir dist/first
+            --binary $env:EXECUTABLE --license LICENSE --notices-dir dist/notices --target $env:TARGET --output-dir dist/first
           cargo run --locked --release -p tidas-dist -- package `
-            --binary $env:EXECUTABLE --license LICENSE --target $env:TARGET --output-dir dist/second
+            --binary $env:EXECUTABLE --license LICENSE --notices-dir dist/notices --target $env:TARGET --output-dir dist/second
           $Archive = "tidas-v$Version-$env:TARGET.zip"
           $FirstHash = (Get-FileHash -Algorithm SHA256 "dist/first/$Archive").Hash
           $SecondHash = (Get-FileHash -Algorithm SHA256 "dist/second/$Archive").Hash
@@ -235,6 +244,7 @@ jobs:
             --archive "dist/first/$Archive" `
             --checksum "dist/first/$Archive.sha256" `
             --target $env:TARGET --smoke
+          if ($LASTEXITCODE -ne 0) { throw "Native archive verification failed." }
           New-Item -ItemType Directory -Force dist/upload | Out-Null
           Copy-Item "dist/first/$Archive", "dist/first/$Archive.sha256" -Destination dist/upload
           "archive=dist/upload/$Archive" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append

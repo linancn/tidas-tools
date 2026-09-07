@@ -31,8 +31,20 @@ as build evidence. Additional files, missing inventory or missing files fail;
 Windows and other packages cannot use this case. This record does not claim to
 retain a compiled library's license.
 
-These exports are reviewable source inputs to TIDAS #185. The Rust report and
-objc2 explanation can contain references that require additional original
-terms; neither is silently classified as complete standalone license text.
-Executable/build binding, complete retained terms, native archive integration
-and archive verification remain required before publication qualification.
+`referenced-terms.json` pins canonical license/exception text to the immutable
+SPDX License List Data v3.28.0 commit. Each retained file has a verified Git
+blob identity, SHA-256 and byte length. The original reference text, including
+any template notation, is preserved verbatim; it is not filled in with guessed
+copyright holders or substituted for upstream attribution.
+
+The complete `tidas-dist notices` producer retains these terms separately from
+the objc2 licensing explanation and from original Rust project/library notices.
+It also retains license/copyright files from the actual installed `rust-src`
+library tree, including compiler-builtins and libm. The package verifier checks
+canonical term records against the reviewed source-pinned catalog, so replacing
+terms and recomputing local hashes does not qualify them.
+
+The executable-bound bundle includes the locked Cargo inputs, original native
+notices, source/toolchain evidence and the complete retained text inventory.
+It is carried by distribution-manifest v2 and checked before archive smoke.
+See [the packaging contract](../README.md) for scope, provenance and commands.

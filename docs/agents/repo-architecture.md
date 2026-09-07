@@ -26,8 +26,8 @@ checkPaths:
   - .githooks/pre-push
   - scripts/**
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 8c4a3e5fd0ebcef81ba6eabcf3a638a31a4f486c
-lastReviewedNote: "Reviewed for tidas-tools #185: internal locked Cargo and installed native/Rust notice collectors preserve source identities and original material with bounded deterministic exports. These are source inputs; executable-bound complete notice packaging remains pending. Public commands, runtime behavior, release authorization and supported platforms are unchanged."
+lastReviewedCommit: d89c14c5bde28729f80ed1a6d960878ed66217cb
+lastReviewedNote: "Reviewed for tidas-tools #185: executable-bound native notice bundles retain locked Cargo/native/Rust source evidence, original notices and source-pinned reference terms. Distribution-manifest v2 and package/verify enforce the complete inventory and byte bindings; release jobs collect notices in the native build environment. Source scopes remain distinct from linkage, and public runtime, supported platforms and release authorization are unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -155,11 +155,14 @@ crates share one exact version; `tidas-dist` stays internal.
 
 The internal `tidas-dist` notice collectors retain checksum-verified Cargo
 normal/build source inputs, installed vcpkg target-port notices and original
-Rust library notice material. Their deterministic JSON and content-addressed
-text exports are review inputs. Dependency edge scopes and target kinds remain
-distinct from actual executable linkage, and a licensing explanation is not
-silently replaced by a full license. See `packaging/README.md` and
-`packaging/third-party-notices/README.md` for the current collection boundary.
+Rust library notice material. The complete producer binds those inputs and
+referenced terms to the actual executable, source commit, lock and toolchain.
+Distribution-manifest v2 includes the digest and length of the complete native
+notice manifest; package/verify require matching original material and the exact
+archive inventory. Dependency edge scopes, target kinds and Rust source
+supersets remain distinct from actual linkage. Original licensing explanations
+and canonical reference terms retain separate attribution roles. See
+`packaging/README.md` and `packaging/third-party-notices/README.md`.
 
 A reviewed append-only `.github/releases/v<version>.json` binds a native
 release to a full source commit. Its merge job creates/verifies the exact tag

@@ -27,8 +27,8 @@ checkPaths:
   - .githooks/pre-push
   - scripts/**
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 8c4a3e5fd0ebcef81ba6eabcf3a638a31a4f486c
-lastReviewedNote: "Reviewed for tidas-tools #185: internal locked Cargo and installed native/Rust notice collectors preserve source identities and original material with bounded deterministic exports. These are source inputs; executable-bound complete notice packaging remains pending. Public commands, runtime behavior, release authorization and supported platforms are unchanged."
+lastReviewedCommit: d89c14c5bde28729f80ed1a6d960878ed66217cb
+lastReviewedNote: "Reviewed for tidas-tools #185: executable-bound native notice bundles retain locked Cargo/native/Rust source evidence, original notices and source-pinned reference terms. Distribution-manifest v2 and package/verify enforce the complete inventory and byte bindings; release jobs collect notices in the native build environment. Source scopes remain distinct from linkage, and public runtime, supported platforms and release authorization are unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -120,9 +120,15 @@ internal exporters against the actual locked Cargo registry archives, native
 installation and Rust sysroot. Regressions must cover tampered crate and
 supplement bytes, missing native/toolchain material, symlink traversal,
 repeatable output and preservation of an existing output on failure. Record
-the selected target and package counts as source-input evidence. Exported
-source inputs alone do not establish complete terms, executable linkage or
-native archive qualification.
+the selected target and package counts as source-input evidence. Then generate
+the executable-bound bundle from a clean committed source tree with the actual
+static-build environment and Rust source/documentation components. Package
+twice and run archive verification and smoke. Tests must reject a foreign
+binary, omitted dependency records, altered canonical terms even with updated
+local hashes, and deleted archive notices even with an updated outer checksum.
+Distribution-manifest v2 and the complete notice tree must qualify on all four
+native jobs before a versioned release. Source-only exports do not prove that
+native packaging or publication has completed.
 
 ## Local Docpact push gate
 

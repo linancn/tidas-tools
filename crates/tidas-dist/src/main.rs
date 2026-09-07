@@ -35,12 +35,25 @@ enum Commands {
         #[arg(long)]
         output_dir: PathBuf,
     },
+    /// Collect a complete executable-bound native notice bundle from build inputs.
+    Notices {
+        #[arg(long)]
+        binary: PathBuf,
+        #[arg(long)]
+        target: String,
+        #[arg(long)]
+        vcpkg_root: PathBuf,
+        #[arg(long)]
+        output_dir: PathBuf,
+    },
     /// Build one deterministic platform archive and checksum.
     Package {
         #[arg(long)]
         binary: PathBuf,
         #[arg(long)]
         license: PathBuf,
+        #[arg(long)]
+        notices_dir: PathBuf,
         #[arg(long)]
         target: String,
         #[arg(long)]
@@ -104,15 +117,36 @@ fn run() -> Result<(), tidas_dist::DistError> {
                 serde_json::json!({"status":"collected","scope":"native-source-notice-inputs","packages":packages})
             );
         }
+        Commands::Notices {
+            binary,
+            target,
+            vcpkg_root,
+            output_dir,
+        } => {
+            let manifest =
+                tidas_dist::notice_bundle::collect(&tidas_dist::notice_bundle::CollectRequest {
+                    binary: &binary,
+                    target: &target,
+                    version,
+                    vcpkg_root: &vcpkg_root,
+                    output_dir: &output_dir,
+                })?;
+            println!(
+                "{}",
+                serde_json::json!({"status":"collected","schema_version":manifest.schema_version,"target":manifest.target,"version":manifest.version,"files":manifest.files.len()})
+            );
+        }
         Commands::Package {
             binary,
             license,
+            notices_dir,
             target,
             output_dir,
         } => {
             let artifact = package(&PackageRequest {
                 binary: &binary,
                 license: &license,
+                notices_dir: &notices_dir,
                 target: &target,
                 version,
                 output_dir: &output_dir,

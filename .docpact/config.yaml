@@ -1,8 +1,8 @@
 version: 1
 layout: repo
-# Review note, 2026-09-06: #183 prepares the qualified 0.2.2 static-CRT patch release; dependency, asset, schema and ownership boundaries are unchanged.
-lastReviewedAt: "2026-09-06"
-lastReviewedCommit: "17db6bd7c8a2fc0ae7dd8b68b5c35a586abe33b8"
+# Review note, 2026-09-07: #185 adds internal source notice collectors; package/verify integration remains pending and ownership, public runtime and platform scope are unchanged.
+lastReviewedAt: "2026-09-07"
+lastReviewedCommit: "8c4a3e5fd0ebcef81ba6eabcf3a638a31a4f486c"
 # Reviewed for Issue #177: macOS Intel is retired from the required native
 # matrix; Linux x86_64/ARM64, macOS Apple Silicon, and Windows x86_64 remain,
 # and ownership/routing/validation governance is otherwise unchanged.

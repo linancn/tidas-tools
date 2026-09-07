@@ -26,9 +26,9 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
   - scripts/**
-lastReviewedAt: 2026-09-06
-lastReviewedCommit: 17db6bd7c8a2fc0ae7dd8b68b5c35a586abe33b8
-lastReviewedNote: "Reviewed for tidas-tools #183: the coherent 0.2.2 patch version carries the qualified Windows static-CRT correction from #181. External dependency versions, executable assets, schemas and domain behavior are unchanged; immutable publication and exact integration remain separately verified."
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: 8c4a3e5fd0ebcef81ba6eabcf3a638a31a4f486c
+lastReviewedNote: "Reviewed for tidas-tools #185: internal locked Cargo and installed native/Rust notice collectors preserve source identities and original material with bounded deterministic exports. These are source inputs; executable-bound complete notice packaging remains pending. Public commands, runtime behavior, release authorization and supported platforms are unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -114,6 +114,15 @@ Record:
 
 Do not claim a deferred cross-platform job or external connector test as a
 local pass.
+
+For notice input collection, run `cargo test --locked -p tidas-dist` and the
+internal exporters against the actual locked Cargo registry archives, native
+installation and Rust sysroot. Regressions must cover tampered crate and
+supplement bytes, missing native/toolchain material, symlink traversal,
+repeatable output and preservation of an existing output on failure. Record
+the selected target and package counts as source-input evidence. Exported
+source inputs alone do not establish complete terms, executable linkage or
+native archive qualification.
 
 ## Local Docpact push gate
 

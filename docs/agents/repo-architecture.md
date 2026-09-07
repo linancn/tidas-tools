@@ -25,9 +25,9 @@ checkPaths:
   - .github/workflows/**
   - .githooks/pre-push
   - scripts/**
-lastReviewedAt: 2026-09-06
-lastReviewedCommit: 17db6bd7c8a2fc0ae7dd8b68b5c35a586abe33b8
-lastReviewedNote: "Reviewed for tidas-tools #183: the coherent 0.2.2 patch version carries the qualified Windows static-CRT correction from #181. External dependency versions, executable assets, schemas and domain behavior are unchanged; immutable publication and exact integration remain separately verified."
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: 8c4a3e5fd0ebcef81ba6eabcf3a638a31a4f486c
+lastReviewedNote: "Reviewed for tidas-tools #185: internal locked Cargo and installed native/Rust notice collectors preserve source identities and original material with bounded deterministic exports. These are source inputs; executable-bound complete notice packaging remains pending. Public commands, runtime behavior, release authorization and supported platforms are unchanged."
 related:
   - ../../AGENTS.md
   - ../../.docpact/config.yaml
@@ -152,6 +152,14 @@ and Windows x86_64. macOS Intel and Windows ARM64 are not supported.
 Pull requests run Rust CI across the four supported targets, verify reproducible
 packages, and qualify the complete crates.io set without credentials. Public
 crates share one exact version; `tidas-dist` stays internal.
+
+The internal `tidas-dist` notice collectors retain checksum-verified Cargo
+normal/build source inputs, installed vcpkg target-port notices and original
+Rust library notice material. Their deterministic JSON and content-addressed
+text exports are review inputs. Dependency edge scopes and target kinds remain
+distinct from actual executable linkage, and a licensing explanation is not
+silently replaced by a full license. See `packaging/README.md` and
+`packaging/third-party-notices/README.md` for the current collection boundary.
 
 A reviewed append-only `.github/releases/v<version>.json` binds a native
 release to a full source commit. Its merge job creates/verifies the exact tag

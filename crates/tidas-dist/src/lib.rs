@@ -4,6 +4,8 @@
 //! binary: every archive, checksum, installer manifest, and package-manager
 //! record is derived from the exact `tidas` executable supplied by the caller.
 
+pub mod notices;
+
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
 use std::fs::{self, File};
@@ -31,6 +33,8 @@ const REQUIRED_TARGETS: [&str; 4] = [
 
 #[derive(Debug, thiserror::Error)]
 pub enum DistError {
+    #[error("native notice evidence is invalid: {0}")]
+    Notice(String),
     #[error("unsupported release target: {0}")]
     UnsupportedTarget(String),
     #[error("release input is not a regular file: {0}")]

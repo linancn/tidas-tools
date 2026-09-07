@@ -17,6 +17,24 @@ struct Cli {
 enum Commands {
     /// Print the workspace release version.
     Version,
+    /// Collect locked normal/build Cargo notice inputs for owner review.
+    CargoNotices {
+        #[arg(long)]
+        target: String,
+        #[arg(long)]
+        output_dir: PathBuf,
+    },
+    /// Export installed native and Rust library notice inputs for owner review.
+    NativeNotices {
+        #[arg(long)]
+        vcpkg_installed: PathBuf,
+        #[arg(long)]
+        rust_sysroot: PathBuf,
+        #[arg(long)]
+        target: String,
+        #[arg(long)]
+        output_dir: PathBuf,
+    },
     /// Build one deterministic platform archive and checksum.
     Package {
         #[arg(long)]
@@ -61,6 +79,31 @@ fn run() -> Result<(), tidas_dist::DistError> {
     let version = env!("CARGO_PKG_VERSION");
     match Cli::parse().command {
         Commands::Version => println!("{version}"),
+        Commands::CargoNotices { target, output_dir } => {
+            let packages =
+                tidas_dist::notices::write_current_cargo_notice_inputs(&target, &output_dir)?;
+            println!(
+                "{}",
+                serde_json::json!({"status":"collected","scope":"cargo-source-notice-inputs","packages":packages})
+            );
+        }
+        Commands::NativeNotices {
+            vcpkg_installed,
+            rust_sysroot,
+            target,
+            output_dir,
+        } => {
+            let packages = tidas_dist::notices::write_native_notice_inputs(
+                &vcpkg_installed,
+                &rust_sysroot,
+                &target,
+                &output_dir,
+            )?;
+            println!(
+                "{}",
+                serde_json::json!({"status":"collected","scope":"native-source-notice-inputs","packages":packages})
+            );
+        }
         Commands::Package {
             binary,
             license,
